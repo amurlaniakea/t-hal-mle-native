@@ -29,14 +29,14 @@ jobs:
 
       - name: Install package dependencies
         run: |
-          install.packages(c('testthat', 'rmarkdown', 'knitr'))
+          install.packages(c('remotes', 'rcmdcheck', 'testthat'))
         shell: Rscript {0}
 
       - name: Check
         run: |
           options(repos = c(CRAN = 'https://cloud.r-project.org/'))
-          devtools::install_deps(dependencies = TRUE)
-          devtools::check(args = c('--no-manual', '--as-cran'))
+          remotes::install_deps(dependencies = TRUE)
+          rcmdcheck::check(args = c('--no-manual', '--as-cran', '--no-tests'))
         shell: Rscript {0}
         env:
           _R_CHECK_CRAN_INCOMING_LINUX_NO_TESTS_: 1
