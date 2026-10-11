@@ -1,46 +1,51 @@
 # Copyright (C) 2026 Pedro Sordo Martínez
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-#' Calcula la curva de influencia del estimador T-HAL-MLE (Lemma 3.1 corregido)
+#' Curva de influencia del T-HAL-MLE (Lemma 3.1 del paper, version empirica)
+#'
+#' Para la base seleccionada phi (s columnas) y la medida de A del paso 7
+#' (los `m` puntos de proyeccion), con Sigma = P[phi phi'] y psi*_pl(a) = mean_i Q*(a, W_i):
+#'
+#'   D_i(a) = phi(a)' Sigma^+ [ r_i + s_i ]
+#'   r_i = min(omega/g, cap)(A_i) * phi(A_i) * (Y_i - Q*(A_i, W_i))          (componente Q-barra)
+#'   s_i = (1/m) sum_j phi(a_j) * ( Q*(a_j, W_i) - psi*_pl(a_j) )            (componente Q_W)
+#'
+#' Q* es el MISMO Q dirigido que usa el estimador puntual (Q + omega/g * phi' eps), no una
+#' version sin el peso. La media empirica de s_i es exactamente 0; la de r_i es solo
+#' aproximadamente 0 porque el LASSO resuelve las ecuaciones de score de forma aproximada.
+#'
+#' @param Y Resultado observado (n).
+#' @param ic_inputs Lista `ic_inputs` devuelta por [thal_core_native()].
+#' @param tol Tolerancia relativa de la pseudo-inversa de Sigma.
+#' @return Matriz n x length(grid) con D_i(a_g).
 #' @export
-influence_curve <- function(A, W, Y, Q_star, g_fun, omega_fun, 
-                            knots, k, selected, alpha, psi_hat, grid,
-                            x_range = range(A)) {
-  n <- length(A)
-  m <- length(grid)
-  
-  Phi_A_sel <- spline_basis(A, knots, k, x_range = x_range)[, selected, drop = FALSE]
-  weights_A <- omega_fun(A) / g_fun(A, W)
-  residuals_A <- Y - Q_star(A, W)
-  component_Q_bar <- weights_A * residuals_A * Phi_A_sel 
-  
-  component_Q_W <- matrix(0, nrow = n, ncol = length(selected))
-  for (j in seq_along(grid)) {
-    a_j <- grid[j]
-    Phi_a_j <- spline_basis(a_j, knots, k, x_range = x_range)[, selected, drop = FALSE]
-    Q_star_a_j_W <- Q_star(rep(a_j, n), W)
-    diff_Q <- Q_star_a_j_W - psi_hat[j]
-    component_Q_W <- component_Q_W + (1 / m) * (diff_Q %*% Phi_a_j)
-  }
-  
-  ic_matrix <- matrix(0, nrow = n, ncol = m)
-  for (j in seq_along(grid)) {
-    a <- grid[j]
-    Phi_a <- spline_basis(a, knots, k, x_range = x_range)[, selected, drop = FALSE]
-    ic_matrix[, j] <- as.numeric(Phi_a %*% t(component_Q_bar + component_Q_W))
-  }
-  ic_matrix
+influence_curve <- function(Y, ic_inputs, tol = 1e-8) {
+  if (is.null(ic_inputs)) stop("ic_inputs es NULL: el targeting no selecciono funciones base.")
+  with(ic_inputs, {
+    n <- length(Y)
+    m <- nrow(Phi_proj)
+    Sigma <- crossprod(Phi_proj) / m
+    Sigma_pinv <- pinv_sym(Sigma, tol = tol)
+
+    psi_pl <- colMeans(Qstar_proj)                              # psi*_pl(a_j)
+    R <- (wA * (Y - Qstar_A)) * Phi_A                           # n x s
+    S <- (Qstar_proj - matrix(psi_pl, n, m, byrow = TRUE)) %*% Phi_proj / m  # n x s
+
+    ((R + S) %*% Sigma_pinv) %*% t(Phi_grid)                    # n x G
+  })
 }
 
+#' Varianza de psi_hat(a): P[D(a)^2] / n
 #' @export
 variance_estimator <- function(ic_matrix) {
   n <- nrow(ic_matrix)
   colMeans(ic_matrix^2) / n
 }
 
+#' Intervalos de Wald puntuales
 #' @export
 wald_ci <- function(psi_hat, var_hat, alpha = 0.05) {
-  z <- qnorm(1 - alpha / 2)
+  z <- stats::qnorm(1 - alpha / 2)
   se <- sqrt(var_hat)
   list(lower = psi_hat - z * se, upper = psi_hat + z * se, estimate = psi_hat, se = se)
 }

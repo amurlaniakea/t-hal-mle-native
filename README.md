@@ -10,7 +10,7 @@ Estado: v0.0.1, 53 tests pasando, 20 funciones exportadas, 100% R base.
 - LASSO nativo: Coordinate Descent con warm starts y mantenimiento de residuo.
 - Base HAL matematicamente fiel: terminos de borde segun van der Laan (2023), nudos estrictamente interiores, escalado a [0,1] para evitar colinealidad.
 - Nuisances nativos: KDE para omega, HAL bivariado con CV para Q, KDE por bins para g.
-- Inferencia completa: curva de influencia con componentes Q_bar y Q_W + IC de Wald puntuales.
+- Inferencia (experimental): curva de influencia del Lemma 3.1 (componentes Q_bar y Q_W, con Sigma^+) + IC de Wald puntuales. Con nuisances oraculo, DGP 1, n = 300 y 80 replicas la cobertura de Wald medida fue ~0.73 (nominal 0.95): aun no es fiable. Ver SPEC/decisions.md (D-0004).
 
 ## Instalacion
 

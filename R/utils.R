@@ -19,17 +19,22 @@ pinv_sym <- function(M, tol = 1e-8) {
 }
 
 #' Selector de lambda basado en el tamano del sieve (Seccion 5.1 del paper)
-#' Busca que el numero de funciones activas caiga en [c1*n^(1/5), c2*n^(1/5)]
+#' Busca que el numero de funciones activas caiga en
+#' [ceiling(c1 * n^(1/(2k*+1))), floor(c2 * n^(1/(2k*+1)))], con k* = k + 1.
+#' Para k = 1 el exponente es 1/5 (como en el paper); para k = 0, 1/3.
+#' NOTA: aun no hay seleccion por validacion cruzada; se toma el primer lambda
+#' (el mas grande) de la ventana, que equivale al borde inferior de la seccion 5.1.
 #' @export
 select_lambda_by_size <- function(df, n, k, c1 = 6, c2 = 9) {
-  target_min <- ceiling(c1 * n^(1/5))
-  target_max <- floor(c2 * n^(1/5))
-  
+  expo <- 1 / (2 * (k + 1) + 1)
+  target_min <- ceiling(c1 * n^expo)
+  target_max <- floor(c2 * n^expo)
+
   in_window <- df >= target_min & df <= target_max
   if (any(in_window)) {
     return(which(in_window)[1])
   }
-  
+
   # Si ningun lambda cae en la ventana, devolver el mas cercano al punto medio
   mid <- (target_min + target_max) / 2
   which.min(abs(df - mid))

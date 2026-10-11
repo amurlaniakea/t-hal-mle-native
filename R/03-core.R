@@ -30,7 +30,8 @@ thal_core_native <- function(A, W, Y, Q_fun, g_fun, omega_fun, grid,
   idx <- select_lambda_by_size(fit$df, n, k, c1, c2)
   eps <- fit$beta[, idx]
   
-  marginal <- function(points) {
+  # Matriz n x m de Q*(a_j, W_i) = Q(a_j, W_i) + min(omega(a_j)/g(a_j|W_i), cap) * phi(a_j)' eps
+  marginal_mat <- function(points) {
     m <- length(points)
     a_rep <- rep(points, each = n)
     w_rep <- rep(W, times = m)
@@ -39,28 +40,43 @@ thal_core_native <- function(A, W, Y, Q_fun, g_fun, omega_fun, grid,
     # CRITICO: usar x_range_A para escalar consistentemente
     corr <- as.numeric(spline_basis(points, knots, k, x_range = x_range_A) %*% eps)
     Wmat <- pmin(sweep(1 / gb, 2, omega_fun(points), "*"), cap)
-    Qstar <- Qb + sweep(Wmat, 2, corr, "*")
-    colMeans(Qstar)
+    Qb + sweep(Wmat, 2, corr, "*")
   }
-  
+  marginal <- function(points) colMeans(marginal_mat(points))
+
   psi_plugin <- marginal(grid)
   sel <- which(eps != 0)
   
   if (length(sel) == 0L) {
     warning("El paso de targeting no selecciono ninguna funcion base; devolviendo plug-in.")
     return(list(psi_hat = psi_plugin, psi_plugin = psi_plugin, grid = grid,
-                eps = eps, selected = sel, size = 0L, lambda = fit$lambda[idx]))
+                eps = eps, selected = sel, size = 0L, lambda = fit$lambda[idx],
+                ic_inputs = NULL))
   }
   
   proj_pts <- if (n > n_proj) {
     unique(quantile(A, probs = seq(0, 1, length.out = n_proj), names = FALSE))
   } else sort(A)
-  
+
   # CRITICO: usar x_range_A para escalar consistentemente
   Phi_p <- spline_basis(proj_pts, knots, k, x_range = x_range_A)[, sel, drop = FALSE]
-  alpha <- pinv_sym(crossprod(Phi_p)) %*% crossprod(Phi_p, marginal(proj_pts))
-  psi_hat <- as.numeric(spline_basis(grid, knots, k, x_range = x_range_A)[, sel, drop = FALSE] %*% alpha)
-  
+  Qstar_proj <- marginal_mat(proj_pts)
+  alpha <- pinv_sym(crossprod(Phi_p)) %*% crossprod(Phi_p, colMeans(Qstar_proj))
+  Phi_g <- spline_basis(grid, knots, k, x_range = x_range_A)[, sel, drop = FALSE]
+  psi_hat <- as.numeric(Phi_g %*% alpha)
+
+  # Insumos de la curva de influencia (Lemma 3.1), todos coherentes con el ajuste:
+  #  - Qstar_A: valor ajustado del LASSO en los datos, Q + min(omega/g, cap) * phi' eps
+  #  - Qstar_proj: Q*(a_j, W_i) en los puntos de proyeccion (medida de A del paso 7)
+  Qstar_A <- as.numeric(offset + H %*% eps)
+  ic_inputs <- list(
+    wA = wA, Qstar_A = Qstar_A,
+    Phi_A = Phi_A[, sel, drop = FALSE],
+    Phi_proj = Phi_p, Qstar_proj = Qstar_proj,
+    Phi_grid = Phi_g, proj_pts = proj_pts
+  )
+
   list(psi_hat = psi_hat, psi_plugin = psi_plugin, grid = grid, eps = eps,
-       selected = sel, size = length(sel), lambda = fit$lambda[idx])
+       selected = sel, size = length(sel), lambda = fit$lambda[idx],
+       ic_inputs = ic_inputs)
 }

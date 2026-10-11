@@ -29,32 +29,19 @@ thal_fit <- function(A, W, Y, grid,
   )
 
   knots <- make_knots(A, n_knots_targeting)
-  x_range_A <- range(A)
   sel <- res$selected
   eps <- res$eps
 
   if (length(sel) > 0) {
-    Q_star <- function(a, w) {
-      Phi_a <- spline_basis(a, knots, k_targeting, x_range = x_range_A)[, sel, drop = FALSE]
-      corr <- as.numeric(Phi_a %*% eps[sel])
-      Q_fun(a, w) + corr
-    }
+    ic_mat  <- influence_curve(Y, res$ic_inputs)
+    var_hat <- variance_estimator(ic_mat)
+    ci      <- wald_ci(res$psi_hat, var_hat)
   } else {
-    Q_star <- Q_fun
+    # Sin funciones seleccionadas no hay working model sobre el que hacer inferencia
+    ic_mat <- matrix(NA_real_, nrow = length(Y), ncol = length(grid))
+    ci <- list(lower = rep(NA_real_, length(grid)), upper = rep(NA_real_, length(grid)),
+               estimate = res$psi_hat, se = rep(NA_real_, length(grid)))
   }
-
-  ic_mat <- influence_curve(
-    A = A, W = W, Y = Y,
-    Q_star = Q_star,
-    g_fun = g_fun, omega_fun = omega_fun,
-    knots = knots, k = k_targeting,
-    selected = sel, alpha = eps[sel],
-    psi_hat = res$psi_hat, grid = grid,
-    x_range = x_range_A
-  )
-
-  var_hat <- variance_estimator(ic_mat)
-  ci <- wald_ci(res$psi_hat, var_hat)
 
   list(
     psi_hat    = res$psi_hat,

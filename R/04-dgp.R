@@ -1,7 +1,11 @@
 # Copyright (C) 2026 Pedro Sordo Martínez
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-#' Simula datos segun los DGP exactos del paper (Tabla 1 / S6)
+#' Simula datos con la estructura de los DGP del paper (paper-spec S6):
+#' W ~ N(0,1); A ~ U(0,10) o A | W ~ N(5 + 1.5 W, 2^2) (sin truncar a [0,10]).
+#' OJO: las funciones g(w) NO son las del paper (el paper usa saltos en w y sin(7 pi w));
+#' aqui son 0.5 w + 0.25 w^2, esa misma por (W > 0), y un DGP 3 propio.
+#' Los resultados no son comparables numericamente con el paper.
 #' @param n Tamano de muestra
 #' @param dgp Numero de DGP (1, 2 o 3)
 #' @param treatment Tipo de tratamiento: "uniform" o "normal"

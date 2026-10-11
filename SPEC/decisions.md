@@ -22,15 +22,22 @@ Y binario y W multivariado quedan para versiones posteriores.
 
 **D-0004 -- Inferencia**
 Estado: tomada.
-Inferencia primaria = curva de influencia (Lemma 3.1 corregido), IC de Wald puntuales.
-Implementada con componentes Q_bar (evaluadas en A_i observadas) y Q_W.
+Inferencia primaria = curva de influencia (Lemma 3.1), IC de Wald puntuales.
+Implementada con componentes Q_bar (en A_i observadas, con el MISMO Q* del estimador puntual)
+y Q_W, ambas con Sigma^+ sobre la base seleccionada.
+Estado: EXPERIMENTAL. Con nuisances oraculo (Q mal especificado, DGP 1 uniforme, n = 300,
+80 replicas, 5 dosis) la media del IC es ~0, pero el SE estimado subestima la SD de Monte Carlo
+(p. ej. 0.22 vs 0.66 en una dosis central) y la cobertura de Wald media fue 0.73 (nominal 0.95).
+Causas candidatas, no probadas: seleccion LASSO data-adaptativa tratada como sieve fijo,
+residuos dentro de muestra (el paper hace cross-fitting K = 2 para la varianza).
 
 **D-0005 -- Medida de integracion de A**
 Estado: tomada.
 Usar la medida empirica de A en la proyeccion final.
 
 **D-0006 -- Selector de lambda**
-Estado: tomada (corregida).
+Estado: exponente por k implementado; seleccion por CV (lambda_cv recortado a la ventana) NO implementada:
+se toma el primer lambda de la ventana.
 El exponente depende del orden de suavidad k:
 - k=0: exponente 1/3 (funciones escalon, menos regularidad).
 - k=1: exponente 1/5 (splines lineales, mas regularidad).
@@ -71,7 +78,8 @@ para evitar colinealidad con los terminos de borde.
 **Q-03 (RESUELTA) -- HAL del outcome**
 HAL bivariado nativo con base tensor_basis() (escalada a [0,1]^2) y CV 5-fold (lambda.min).
 
-**Q-04 (RESUELTA) -- Densidad condicional g_n**
+**Q-04 (ABIERTA) -- Densidad condicional g_n**
+OJO: el paper usa un estimador HAL de la densidad (haldensify). Esto es una alternativa no validada.
 KDE Sheather-Jones por bins de W (n_bins = 5 por defecto).
 Cada bin tiene su propia KDE 1D de A. Fallback a la marginal si < 5 datos en un bin.
 Es una funcion general de (a, w) evaluable fuera de muestra (resuelve Q-14).
@@ -85,8 +93,9 @@ normal da RMSE ~3.69 frente a ~0.99 sin CF. El repo nativo usa ajuste en muestra
 completa por defecto, pero la infraestructura permite explorar CF en el futuro.
 
 **Q-07 (RESUELTA) -- Termino Q_W del gradiente**
-Implementado en influence_curve(). Se calcula el promedio sobre la grid de evaluacion
-de phi(a_j) * (Q*(a_j, W_i) - psi_hat(a_j)).
+Implementado en influence_curve(): promedio sobre los puntos de proyeccion (la medida de A del paso 7)
+de phi(a_j) * (Q*(a_j, W_i) - psi*_pl(a_j)), con psi*_pl la marginal plug-in dirigida.
+Su media empirica es exactamente 0 (test en test-influence.R).
 
 **Q-09 (RESUELTA) -- Truncamiento de pesos**
 Se trunca omega/g. Se aplica siempre. Ver D-0008.
