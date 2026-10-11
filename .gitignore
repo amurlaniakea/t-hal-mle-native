@@ -1,0 +1,39 @@
+# R
+*.Rproj.user
+*.Rhistory
+*.RData
+*.Ruserdata
+.Rproj.user/
+.Rhistory
+.Rproj.user
+renv/library/
+renv/python/
+packrat/
+
+# Build artifacts
+*.tar.gz
+*.tgz
+*.zip
+*.so
+*.dll
+*.dylib
+
+# Test output
+testthat/.covr/
+testthat/results.Rds
+testthat/report.txt
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials
+.hermes/
+.gnupg/
+.aws/
