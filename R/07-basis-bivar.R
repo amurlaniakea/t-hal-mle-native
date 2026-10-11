@@ -2,16 +2,40 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 #' Base HAL bivariada (d=2) de orden k, segun van der Laan (2023)
+#' Escala A y W a [0,1] para que los terminos de borde tengan sentido.
 #'
-#' k=0: 1, I(a>=ua), I(w>=uw), I(a>=ua)I(w>=uw)
-#' k=1: 1, a, w, a*w, (a-ua)+, (w-uw)+, w(a-ua)+, a(w-uw)+, (a-ua)+(w-uw)+
-#' Los terminos de borde (orden < k) son potencias (nudo en el origen), no indicadores.
+#' k=0: 1, I(a_scaled>=ua), I(w_scaled>=uw), I(a_scaled>=ua)I(w_scaled>=uw)
+#' k=1: 1, a_scaled, w_scaled, a_scaled*w_scaled, (a_scaled-ua)+, (w_scaled-uw)+,
+#'      w_scaled(a_scaled-ua)+, a_scaled(w_scaled-uw)+, (a_scaled-ua)+(w_scaled-uw)+
 #'
 #' @export
-tensor_basis <- function(A, W, knots_A, knots_W, k = 0L) {
+tensor_basis <- function(A, W, knots_A, knots_W, k = 0L,
+                         A_range = range(A, na.rm = TRUE),
+                         W_range = range(W, na.rm = TRUE)) {
   if (length(A) != length(W)) stop("A y W deben tener la misma longitud")
-  if (k == 0L) return(tensor_basis_k0(A, W, knots_A, knots_W))
-  if (k == 1L) return(tensor_basis_k1(A, W, knots_A, knots_W))
+  
+  # Escalar A a [0,1]
+  min_A <- A_range[1]; max_A <- A_range[2]
+  if (max_A == min_A) {
+    A_scaled <- rep(0, length(A))
+    knots_A_scaled <- rep(0, length(knots_A))
+  } else {
+    A_scaled <- (A - min_A) / (max_A - min_A)
+    knots_A_scaled <- (knots_A - min_A) / (max_A - min_A)
+  }
+  
+  # Escalar W a [0,1]
+  min_W <- W_range[1]; max_W <- W_range[2]
+  if (max_W == min_W) {
+    W_scaled <- rep(0, length(W))
+    knots_W_scaled <- rep(0, length(knots_W))
+  } else {
+    W_scaled <- (W - min_W) / (max_W - min_W)
+    knots_W_scaled <- (knots_W - min_W) / (max_W - min_W)
+  }
+  
+  if (k == 0L) return(tensor_basis_k0(A_scaled, W_scaled, knots_A_scaled, knots_W_scaled))
+  if (k == 1L) return(tensor_basis_k1(A_scaled, W_scaled, knots_A_scaled, knots_W_scaled))
   stop("Solo k=0 y k=1 implementados")
 }
 

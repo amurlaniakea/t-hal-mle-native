@@ -2,14 +2,12 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 #' Nucleo del T-HAL-MLE (Algorithm 1, pasos 3-8)
-#' @param w_cap Cap para pesos omega/g. NULL usa sqrt(n)*log(n/5). "obs_max" usa el maximo observado.
 #' @export
 thal_core_native <- function(A, W, Y, Q_fun, g_fun, omega_fun, grid,
                              k = 1L, n_knots = 50L, c1 = 6, c2 = 9,
                              n_proj = 200L, nlambda = 50L, w_cap = NULL) {
   n <- length(A)
   
-  # D-0008: Truncamiento de pesos (soporta la heuristica "obs_max")
   if (is.null(w_cap)) {
     cap <- sqrt(n) * log(n / 5)
   } else if (identical(w_cap, "obs_max")) {
@@ -19,29 +17,27 @@ thal_core_native <- function(A, W, Y, Q_fun, g_fun, omega_fun, grid,
   }
   
   knots <- make_knots(A, n_knots)
-  Phi_A <- spline_basis(A, knots, k)
+  x_range_A <- range(A)
+  Phi_A <- spline_basis(A, knots, k, x_range = x_range_A)
   
-  # Q-05: Covariable inteligente sin Sigma^{-1} por defecto
   wA <- pmin(omega_fun(A) / g_fun(A, W), cap)
-  H <- wA * Phi_A 
+  H <- wA * Phi_A
   
   offset <- Q_fun(A, W)
   
-  # LASSO propio
   fit <- lasso_path(H, Y, offset = offset, nlambda = nlambda)
   
-  # D-0006: Selector de lambda
   idx <- select_lambda_by_size(fit$df, n, k, c1, c2)
   eps <- fit$beta[, idx]
   
-  # Marginalizacion plug-in dirigida
   marginal <- function(points) {
     m <- length(points)
     a_rep <- rep(points, each = n)
     w_rep <- rep(W, times = m)
     Qb <- matrix(Q_fun(a_rep, w_rep), n, m)
     gb <- matrix(g_fun(a_rep, w_rep), n, m)
-    corr <- as.numeric(spline_basis(points, knots, k) %*% eps)
+    # CRITICO: usar x_range_A para escalar consistentemente
+    corr <- as.numeric(spline_basis(points, knots, k, x_range = x_range_A) %*% eps)
     Wmat <- pmin(sweep(1 / gb, 2, omega_fun(points), "*"), cap)
     Qstar <- Qb + sweep(Wmat, 2, corr, "*")
     colMeans(Qstar)
@@ -56,14 +52,14 @@ thal_core_native <- function(A, W, Y, Q_fun, g_fun, omega_fun, grid,
                 eps = eps, selected = sel, size = 0L, lambda = fit$lambda[idx]))
   }
   
-  # Paso 7: Proyeccion OLS sobre la base activa
   proj_pts <- if (n > n_proj) {
     unique(quantile(A, probs = seq(0, 1, length.out = n_proj), names = FALSE))
   } else sort(A)
   
-  Phi_p <- spline_basis(proj_pts, knots, k)[, sel, drop = FALSE]
+  # CRITICO: usar x_range_A para escalar consistentemente
+  Phi_p <- spline_basis(proj_pts, knots, k, x_range = x_range_A)[, sel, drop = FALSE]
   alpha <- pinv_sym(crossprod(Phi_p)) %*% crossprod(Phi_p, marginal(proj_pts))
-  psi_hat <- as.numeric(spline_basis(grid, knots, k)[, sel, drop = FALSE] %*% alpha)
+  psi_hat <- as.numeric(spline_basis(grid, knots, k, x_range = x_range_A)[, sel, drop = FALSE] %*% alpha)
   
   list(psi_hat = psi_hat, psi_plugin = psi_plugin, grid = grid, eps = eps,
        selected = sel, size = length(sel), lambda = fit$lambda[idx])

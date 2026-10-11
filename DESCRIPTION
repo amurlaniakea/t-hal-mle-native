@@ -1,17 +1,16 @@
 Package: thalnative
-Title: Targeted Highly Adaptive Lasso Minimum Loss Estimation (Native)
+Type: Package
+Title: Native R Implementation of T-HAL-MLE for Dose-Response Curves
 Version: 0.0.1
+Date: 2026-10-11
 Authors@R: person("Pedro", "Sordo Martinez", email = "amurlaniakea@gmail.com", role = c("aut", "cre"))
-Description: Implementacion nativa y matematicamente fiel del T-HAL-MLE (arXiv:2607.03824v1) 
-    sin depender de glmnet ni hal9001 para el nucleo de targeting.
-License: AGPL-3.0-or-later
+Description: Implementation of Targeted Highly Adaptive Lasso Minimum Loss Estimation 
+    (T-HAL-MLE) for continuous dose-response curves. 100 percent R base with no external 
+    dependencies. Includes native LASSO via coordinate descent, HAL basis construction, 
+    and influence curve-based inference.
+License: AGPL (>= 3)
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
-Depends: R (>= 4.0.0)
-Suggests: 
-    testthat (>= 3.0.0),
-    hal9001,
-    haldensify,
-    glmnet
+Depends: R (>= 3.5.0)
+Imports: stats
+Suggests: testthat (>= 3.0.0), pkgload
 Config/testthat/edition: 3
