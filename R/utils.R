@@ -1,3 +1,6 @@
+# Copyright (C) 2026 Pedro Sordo Martinez
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 #' Pseudo-inversa de Moore-Penrose para matrices simetricas (SVD truncado por autovalores)
 #' @param M Matriz simetrica.
 #' @param tol Tolerancia relativa respecto al autovalor maximo.

@@ -1,3 +1,6 @@
+# Copyright (C) 2026 Pedro Sordo Martinez
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 #' Simula datos segun los DGP del paper (Tabla 1)
 #' @param n Tamano de muestra
 #' @param dgp Numero de DGP (1, 2 o 3)

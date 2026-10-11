@@ -1,3 +1,6 @@
+# Copyright (C) 2026 Pedro Sordo Martinez
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 #' Genera nudos incluyendo SIEMPRE el minimo de A para evitar el hueco (Q-17)
 #' @param A Vector numerico de dosis observadas.
 #' @param n_knots Numero de nudos internos.

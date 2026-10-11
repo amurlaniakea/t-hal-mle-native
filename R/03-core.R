@@ -1,3 +1,6 @@
+# Copyright (C) 2026 Pedro Sordo Martinez
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 #' Nucleo del T-HAL-MLE (Algorithm 1, pasos 3-8)
 #' @param w_cap Cap para pesos omega/g. NULL usa sqrt(n)*log(n/5). "obs_max" usa el maximo observado.
 #' @export

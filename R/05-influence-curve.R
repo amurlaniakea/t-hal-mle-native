@@ -1,3 +1,6 @@
+# Copyright (C) 2026 Pedro Sordo Martinez
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 #' Calcula la curva de influencia del estimador T-HAL-MLE
 #' 
 #' Segun Lemma 3.1 del paper (ec. 1):
