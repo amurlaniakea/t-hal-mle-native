@@ -1,15 +1,15 @@
 Package: thalnative
 Title: Targeted Highly Adaptive Lasso Minimum Loss Estimation (Native)
 Version: 0.0.1
-Authors@R: person("Pedro", "Sordo Martínez", email = "amurlaniakea@gmail.com", role = c("aut", "cre"))
-Description: Implementacion nativa y matematicamente fiel del T-HAL-MLE (arXiv:2607.03824v1)
+Authors@R: person("Pedro", "Sordo Martinez", email = "amurlaniakea@gmail.com", role = c("aut", "cre"))
+Description: Implementacion nativa y matematicamente fiel del T-HAL-MLE (arXiv:2607.03824v1) 
     sin depender de glmnet ni hal9001 para el nucleo de targeting.
 License: AGPL-3.0-or-later
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: R (>= 4.0.0)
-Suggests:
+Suggests: 
     testthat (>= 3.0.0),
     hal9001,
     haldensify,
