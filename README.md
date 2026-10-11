@@ -90,4 +90,4 @@ AGPL-3.0-or-later
 
 ## Autor
 
-Pedro Sordo Martinez, amurlaniakea@gmail.com
+Pedro Sordo Martínez, amurlaniakea@gmail.com

@@ -3,7 +3,7 @@ Type: Package
 Title: Native R Implementation of T-HAL-MLE for Dose-Response Curves
 Version: 0.0.1
 Date: 2026-10-11
-Authors@R: person("Pedro", "Sordo Martinez", email = "amurlaniakea@gmail.com", role = c("aut", "cre"))
+Authors@R: person("Pedro", "Sordo Martínez", email = "amurlaniakea@gmail.com", role = c("aut", "cre"))
 Description: Implementation of Targeted Highly Adaptive Lasso Minimum Loss Estimation 
     (T-HAL-MLE) for continuous dose-response curves. 100 percent R base with no external 
     dependencies. Includes native LASSO via coordinate descent, HAL basis construction, 

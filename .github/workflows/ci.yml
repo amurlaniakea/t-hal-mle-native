@@ -36,7 +36,7 @@ jobs:
         run: |
           options(repos = c(CRAN = 'https://cloud.r-project.org/'))
           remotes::install_deps(dependencies = TRUE)
-          rcmdcheck::check(args = c('--no-manual', '--as-cran', '--no-tests'))
+          rcmdcheck::rcmdcheck(args = c('--no-manual', '--as-cran', '--no-tests'))
         shell: Rscript {0}
         env:
           _R_CHECK_CRAN_INCOMING_LINUX_NO_TESTS_: 1
