@@ -36,6 +36,8 @@ influence_curve <- function(Y, ic_inputs, tol = 1e-8) {
 }
 
 #' Varianza de psi_hat(a): P[D(a)^2] / n
+#'
+#' @param ic_matrix Matriz n x G de la curva de influencia, de [influence_curve()].
 #' @export
 variance_estimator <- function(ic_matrix) {
   n <- nrow(ic_matrix)
@@ -43,6 +45,10 @@ variance_estimator <- function(ic_matrix) {
 }
 
 #' Intervalos de Wald puntuales
+#'
+#' @param psi_hat Estimaciones puntuales.
+#' @param var_hat Varianzas estimadas.
+#' @param alpha Nivel de significacion (0.05 da IC al 95\%).
 #' @export
 wald_ci <- function(psi_hat, var_hat, alpha = 0.05) {
   z <- stats::qnorm(1 - alpha / 2)

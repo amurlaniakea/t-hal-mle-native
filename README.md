@@ -2,14 +2,14 @@
 
 Implementacion nativa en R base del Targeted Highly Adaptive Lasso Minimum Loss Estimation (T-HAL-MLE) para curvas dosis-respuesta continuas.
 
-Estado: v0.0.1, 53 tests pasando, 20 funciones exportadas, 100% R base.
+Estado: v0.0.1 EXPERIMENTAL. 62 expectativas (24 bloques de test) pasando, 20 funciones exportadas, 100% R base. Prototipo de investigacion: la inferencia aun no esta validada y varias piezas difieren del paper (ver SPEC/decisions.md).
 
 ## Caracteristicas
 
 - Cero dependencias externas: sin glmnet, hal9001, haldensify, ni Matrix. Solo R base + stats.
 - LASSO nativo: Coordinate Descent con warm starts y mantenimiento de residuo.
-- Base HAL matematicamente fiel: terminos de borde segun van der Laan (2023), nudos estrictamente interiores, escalado a [0,1] para evitar colinealidad.
-- Nuisances nativos: KDE para omega, HAL bivariado con CV para Q, KDE por bins para g.
+- Base HAL segun van der Laan (2023): terminos de borde, nudos estrictamente interiores y escalado a [0,1] (sin colinealidad; rango completo verificado). No comparada con hal9001.
+- Nuisances nativos: KDE para omega, HAL bivariado con CV para Q, KDE por bins para g (g_n NO es el estimador HAL de densidad del paper).
 - Inferencia (experimental): curva de influencia del Lemma 3.1 (componentes Q_bar y Q_W, con Sigma^+) + IC de Wald puntuales. Con nuisances oraculo, DGP 1, n = 300 y 80 replicas la cobertura de Wald medida fue ~0.73 (nominal 0.95): aun no es fiable. Ver SPEC/decisions.md (D-0004).
 
 ## Instalacion
@@ -65,9 +65,11 @@ Decisiones clave:
 - D-0009: Orden de suavidad k siempre explicito
 - D-0010: Repo 100% nativo, sin oraculos de validacion externos
 
+Preguntas abiertas:
+- Q-04: Densidad condicional. Se usa KDE por bins, no el estimador HAL del paper; sin validar contra la densidad verdadera
+
 Preguntas resueltas:
 - Q-01: Base HAL segun van der Laan (2023), terminos de borde = potencias, escalado a [0,1]
-- Q-04: Densidad condicional nativa (KDE por bins)
 - Q-05: Sin Sigma^-1 por defecto
 - Q-17: Nudos estrictamente interiores para evitar colinealidad
 
@@ -76,7 +78,7 @@ Preguntas resueltas:
 cd ~/repos/t-hal-mle-native
 Rscript -e 'testthat::test_local(".")'
 
-53 tests en verde.
+62 expectativas (24 bloques `test_that`) en verde al 2026-10-11.
 
 ## Referencias
 

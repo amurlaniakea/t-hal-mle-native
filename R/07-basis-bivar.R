@@ -8,6 +8,14 @@
 #' k=1: 1, a_scaled, w_scaled, a_scaled*w_scaled, (a_scaled-ua)+, (w_scaled-uw)+,
 #'      w_scaled(a_scaled-ua)+, a_scaled(w_scaled-uw)+, (a_scaled-ua)+(w_scaled-uw)+
 #'
+#'
+#' @param A Dosis.
+#' @param W Covariable.
+#' @param knots_A Nudos de A en [0,1].
+#' @param knots_W Nudos de W en [0,1].
+#' @param k Orden de suavidad (0 o 1).
+#' @param A_range Rango de entrenamiento de A.
+#' @param W_range Rango de entrenamiento de W.
 #' @export
 tensor_basis <- function(A, W, knots_A, knots_W, k = 0L,
                          A_range = range(A, na.rm = TRUE),

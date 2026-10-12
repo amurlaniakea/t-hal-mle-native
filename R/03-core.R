@@ -2,6 +2,21 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 #' Nucleo del T-HAL-MLE (Algorithm 1, pasos 3-8)
+#'
+#' @param A Dosis observada.
+#' @param W Covariable observada.
+#' @param Y Resultado continuo.
+#' @param Q_fun Funcion (a, w) -> estimacion inicial de E[Y|A=a,W=w].
+#' @param g_fun Funcion (a, w) -> estimacion de la densidad condicional g(a|w).
+#' @param omega_fun Funcion a -> densidad marginal de A.
+#' @param grid Dosis donde se evalua la curva.
+#' @param k Orden de suavidad del objetivo (la base del targeting).
+#' @param n_knots Numero de nudos de la base del targeting.
+#' @param c1 Constante inferior de la ventana del tamano del sieve.
+#' @param c2 Constante superior de la ventana del tamano del sieve.
+#' @param n_proj Numero maximo de dosis usadas en la proyeccion final (paso 7).
+#' @param nlambda Numero de valores de lambda del camino LASSO.
+#' @param w_cap Tope de los pesos omega/g: NULL (sqrt(n) log(n/5), como el paper), un numero, o "obs_max" (maximo observado; heuristica no incluida en el paper).
 #' @export
 thal_core_native <- function(A, W, Y, Q_fun, g_fun, omega_fun, grid,
                              k = 1L, n_knots = 50L, c1 = 6, c2 = 9,

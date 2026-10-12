@@ -34,6 +34,10 @@ simulate_data <- function(n, dgp = 1, treatment = c("uniform", "normal")) {
   list(W = W, A = A, Y = Y)
 }
 
+#' Regresion verdadera Q0(a, w) = E[Y | A = a, W = w] del DGP
+#' @param a Dosis.
+#' @param w Covariable.
+#' @param dgp Numero de DGP (1, 2 o 3).
 #' @export
 Q0_dgp <- function(a, w, dgp = 1) {
   g_w <- 0.5 * w + 0.25 * w^2
@@ -43,6 +47,10 @@ Q0_dgp <- function(a, w, dgp = 1) {
   else stop("dgp debe ser 1, 2 o 3")
 }
 
+#' Densidad condicional verdadera g0(a | w)
+#' @param a Dosis.
+#' @param w Covariable.
+#' @param treatment "uniform" o "normal".
 #' @export
 g0_dgp <- function(a, w, treatment = c("uniform", "normal")) {
   treatment <- match.arg(treatment)
@@ -50,6 +58,9 @@ g0_dgp <- function(a, w, treatment = c("uniform", "normal")) {
   else dnorm(a, mean = 5 + 1.5 * w, sd = 2)
 }
 
+#' Densidad marginal verdadera de A (oraculo)
+#' @param a Dosis.
+#' @param treatment "uniform" o "normal".
 #' @export
 omega_oracle <- function(a, treatment = c("uniform", "normal")) {
   treatment <- match.arg(treatment)
@@ -57,6 +68,9 @@ omega_oracle <- function(a, treatment = c("uniform", "normal")) {
   else dnorm(a, mean = 5, sd = 2.5)
 }
 
+#' Curva dosis-respuesta verdadera psi0(a) del DGP
+#' @param a Dosis.
+#' @param dgp Numero de DGP (1, 2 o 3).
 #' @export
 true_drc <- function(a, dgp = 1) {
   if (dgp == 1) 3 * sin(1.5 * a) + 0.5 * a + 0.25 + (a - 5) * 0.25

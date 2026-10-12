@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 #' Genera nudos estrictamente interiores para evitar colinealidad con los bordes
+#'
+#' @param x Vector numerico (dosis o covariable) sin escalar.
+#' @param n_knots Numero de nudos estrictamente interiores.
 #' @export
 make_knots <- function(x, n_knots) {
   if (n_knots <= 0) return(numeric(0))
@@ -11,6 +14,11 @@ make_knots <- function(x, n_knots) {
 
 #' Construye la base de splines de orden k segun van der Laan (2023)
 #' Escala x a [0,1] para que el "borde 0" tenga sentido.
+#'
+#' @param x Vector numerico a evaluar.
+#' @param knots Nudos en escala [0,1], de [make_knots()].
+#' @param k Orden de suavidad: 0 (indicadores) o 1 (splines lineales).
+#' @param x_range Rango (min, max) de los datos de entrenamiento, para escalar de forma consistente al predecir.
 #' @export
 spline_basis <- function(x, knots, k = 1L, x_range = range(x, na.rm = TRUE)) {
   min_x <- x_range[1]; max_x <- x_range[2]
