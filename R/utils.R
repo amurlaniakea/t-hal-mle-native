@@ -24,6 +24,12 @@ pinv_sym <- function(M, tol = 1e-8) {
 #' Para k = 1 el exponente es 1/5 (como en el paper); para k = 0, 1/3.
 #' NOTA: aun no hay seleccion por validacion cruzada; se toma el primer lambda
 #' (el mas grande) de la ventana, que equivale al borde inferior de la seccion 5.1.
+#' @param df Vector con el numero de coeficientes activos en cada lambda del camino.
+#' @param n Tamano de muestra.
+#' @param k Orden de suavidad del objetivo.
+#' @param c1 Constante inferior de la ventana.
+#' @param c2 Constante superior de la ventana.
+#' @return Indice del lambda elegido.
 #' @export
 select_lambda_by_size <- function(df, n, k, c1 = 6, c2 = 9) {
   expo <- 1 / (2 * (k + 1) + 1)

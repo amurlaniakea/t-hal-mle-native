@@ -2,6 +2,23 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 #' Pipeline completo del T-HAL-MLE nativo
+#'
+#' @param A Dosis observada.
+#' @param W Covariable observada (escalar).
+#' @param Y Resultado continuo.
+#' @param grid Dosis donde se evalua la curva.
+#' @param k_targeting Orden de suavidad del targeting.
+#' @param k_Q Orden de suavidad del HAL del resultado (siempre explicito).
+#' @param n_knots_targeting Nudos de la base del targeting.
+#' @param n_knots_Q Nudos por variable en el HAL del resultado.
+#' @param n_bins_g Numero de bins de W en la densidad condicional por KDE.
+#' @param w_cap Tope de pesos; ver [thal_core_native()].
+#' @param c1 Constante inferior de la ventana del sieve.
+#' @param c2 Constante superior de la ventana del sieve.
+#' @param n_proj Dosis usadas en la proyeccion final.
+#' @param nlambda Valores de lambda del camino LASSO.
+#' @param nfolds_Q Folds de validacion cruzada del HAL del resultado.
+#' @param seed Semilla para reproducibilidad.
 #' @export
 thal_fit <- function(A, W, Y, grid,
                      k_targeting = 1L, k_Q = 0L,
