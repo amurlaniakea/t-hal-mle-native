@@ -37,3 +37,4 @@ Thumbs.db
 .hermes/
 .gnupg/
 .aws/
+mc_out/

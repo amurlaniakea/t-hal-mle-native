@@ -8,3 +8,5 @@
 ^validation$
 \.Rproj$
 ~$
+^experiments$
+^mc_out$
