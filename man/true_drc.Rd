@@ -12,5 +12,5 @@ true_drc(a, dgp = 1)
 \item{dgp}{Numero de DGP (1, 2 o 3).}
 }
 \description{
-Curva dosis-respuesta verdadera psi0(a) del DGP
+`psi0(a) = 3 sin(1.5 a) + 0.5 a + E[g(W)] (a - 4)`, con `E[g(W)] = 2.5, 2, 0` en los DGP 1, 2, 3.
 }

@@ -139,3 +139,14 @@ interiores, y el termino lineal puro (escalado) cubre el borde 0 correctamente.
 - **Q-08 -- CV honesto de lambda**: El CV del targeting usa Q_n ajustado en la muestra completa.
 - **Mejora de g_n**: KDE por bins es una aproximacion. Futuras versiones podrian explorar
   estimadores de densidad condicional mas sofisticados en R base.
+
+---
+
+## D-0011 -- DGP del paquete = DGP exactos del paper
+Estado: tomada.
+`simulate_data()`, `Q0_dgp()`, `g0_dgp()`, `omega_oracle()` y `true_drc()` reproducen la seccion 7.1 del
+paper: W ~ N(0,1); g(w) = 5*1[w>0] (DGP 1), 4(1[w>-1]-1[w>0]+1[w>1]) (DGP 2), 3 sin(7 pi w) (DGP 3);
+A ~ U(0,10) o A|W ~ N(5+1.5W, 2^2) truncada a [0,10]; `omega_oracle` es la marginal exacta (integral numerica).
+Antes el paquete usaba g(w) propias (0.5w + 0.25w^2); la cobertura ~0.73 citada en D-0004 se midio con ese DGP anterior.
+Con el DGP exacto y tratamiento normal, T-HAL se dispara en las dosis extremas incluso con g y omega oraculo
+(ver experiments/mc_wcap.R); el test de test-core.R solo exige un resultado finito y acotado.

@@ -6,6 +6,6 @@
 #' Prototipo de investigacion en R base del Targeted HAL-MLE
 #' (arXiv:2607.03824). Ver el README y SPEC/decisions.md.
 #'
-#' @importFrom stats approxfun density dnorm qnorm quantile rnorm runif
+#' @importFrom stats approxfun density dnorm pnorm qnorm quantile rnorm runif
 #' @keywords internal
 "_PACKAGE"
