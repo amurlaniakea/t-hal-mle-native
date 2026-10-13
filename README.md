@@ -2,7 +2,7 @@
 
 Implementacion nativa en R base del Targeted Highly Adaptive Lasso Minimum Loss Estimation (T-HAL-MLE) para curvas dosis-respuesta continuas.
 
-Estado: v0.0.1 EXPERIMENTAL. 62 expectativas (24 bloques de test) pasando, 20 funciones exportadas, 100% R base. Prototipo de investigacion: la inferencia aun no esta validada y varias piezas difieren del paper (ver SPEC/decisions.md).
+Estado: v0.0.1 EXPERIMENTAL. 80 expectativas (27 bloques de test) pasando, 20 funciones exportadas, 100% R base. Prototipo de investigacion: la inferencia aun no esta validada y varias piezas difieren del paper (ver SPEC/decisions.md).
 
 ## Caracteristicas
 
@@ -108,14 +108,51 @@ n = 500, B = 50, tratamiento normal, g y omega estimadas
 
 Con el tope del paper (sqrt(n) log(n/5), aprox. 103) T-HAL se dispara en las dosis extremas; con topes mas
 estrictos mejora al plug-in HAL. Con g y omega oraculo el resultado es parecido, asi que la causa no es la
-estimacion de g. El tope se compararon en la misma simulacion: es evidencia exploratoria, no confirmada.
+estimacion de g. Los topes se compararon en la misma simulacion: es evidencia exploratoria; la confirmacion con semillas nuevas esta mas abajo.
+
+### Topes de peso (confirmacion con semilla nueva)
+
+n = 500, B = 60, tratamiento normal, g y omega estimadas, semilla base 777001
+(`experiments/results/wcap_confirmacion_n500_B60_s777001.csv`). Los topes (3, 5, 8, `obs_max` y el del paper)
+se fijaron antes de correr, con semillas distintas a las del experimento exploratorio.
+RMSE medio sobre 25 dosis:
+
+| DGP | plug-in HAL | T-HAL tope paper | tope 3 | tope 5 | tope 8 | obs_max |
+|---|---|---|---|---|---|---|
+| 1 | 1.28 | 6.97 | 0.98 | 1.19 | 1.54 | 1.32 |
+| 2 | 1.24 | 5.32 | 0.92 | 1.04 | 1.22 | 1.13 |
+| 3 | 1.72 | 6.53 | 1.49 | 1.67 | 1.94 | 1.72 |
+
+Diferencia de RMSE por replica frente al plug-in HAL (negativa = T-HAL mejor), con su error estandar entre
+parentesis, y replicas (de 60) en las que T-HAL gana:
+
+| tope | DGP 1 | DGP 2 | DGP 3 |
+|---|---|---|---|
+| 3 | -0.36 (0.037), 55 | -0.37 (0.029), 58 | -0.25 (0.096), 40 |
+| 5 | -0.22 (0.063), 45 | -0.27 (0.041), 48 | -0.11 (0.110), 37 |
+| 8 | +0.01 (0.100), 42 | -0.13 (0.062), 47 | +0.12 (0.129), 31 |
+| obs_max | -0.16 (0.082), 46 | -0.20 (0.052), 46 | -0.05 (0.109), 32 |
+
+Lectura (n = 500 y tratamiento normal unicamente):
+
+- En los tres DGP el orden es el mismo: cuanto mas bajo el tope, mejor (3 < 5 < 8 en RMSE). El tope 3 es el mas
+  bajo probado, asi que el optimo no esta acotado: puede estar por debajo.
+- La ganancia es clara en los DGP 1 y 2; en el DGP 3 es de unos 2.7 errores estandar con el tope 3 y el tope 5
+  apenas se distingue del plug-in HAL.
+- La mejora viene de las dosis centrales (RMSE ~0.43-0.58 frente a 0.80-1.51 del plug-in HAL). En los extremos la
+  mejora es modesta (DGP 1 y 2) o nula: en el DGP 3 con tope 3 el RMSE en extremos (2.15) y en a = 9 (4.26) es
+  peor que el del plug-in HAL (1.95 y 2.97).
+- Con tratamiento uniforme omega/g = 1 y el tope no actua. Con tratamiento normal, E[omega/g] = 1, asi que un
+  tope de 3 equivale a truncar a 3 veces el peso medio (el del paper, ~103, a ~100 veces).
+- Aun no hay evidencia de cobertura de Wald con tope bajo, ni de n = 1000 o 2000. Por eso el tope por defecto
+  del paquete sigue siendo el del paper; `w_cap` es una opcion explicita.
 
 ## Tests
 
 cd ~/repos/t-hal-mle-native
 Rscript -e 'testthat::test_local(".")'
 
-62 expectativas (24 bloques `test_that`) en verde al 2026-10-11.
+80 expectativas (27 bloques `test_that`) en verde al 2026-10-13.
 
 ## Referencias
 
