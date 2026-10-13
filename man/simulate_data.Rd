@@ -2,25 +2,22 @@
 % Please edit documentation in R/04-dgp.R
 \name{simulate_data}
 \alias{simulate_data}
-\title{Simula datos con la estructura de los DGP del paper (paper-spec S6):
-W ~ N(0,1); A ~ U(0,10) o A | W ~ N(5 + 1.5 W, 2^2) (sin truncar a [0,10]).
-OJO: las funciones g(w) NO son las del paper (el paper usa saltos en w y sin(7 pi w));
-aqui son 0.5 w + 0.25 w^2, esa misma por (W > 0), y un DGP 3 propio.
-Los resultados no son comparables numericamente con el paper.}
+\title{Simula datos con los DGP del paper (arXiv:2607.03824, seccion 7.1)}
 \usage{
 simulate_data(n, dgp = 1, treatment = c("uniform", "normal"))
 }
 \arguments{
-\item{n}{Tamano de muestra}
+\item{n}{Tamano de muestra.}
 
-\item{dgp}{Numero de DGP (1, 2 o 3)}
+\item{dgp}{Numero de DGP (1, 2 o 3).}
 
-\item{treatment}{Tipo de tratamiento: "uniform" o "normal"}
+\item{treatment}{Tipo de tratamiento: "uniform" o "normal".}
+}
+\value{
+Lista con `W`, `A` e `Y`.
 }
 \description{
-Simula datos con la estructura de los DGP del paper (paper-spec S6):
-W ~ N(0,1); A ~ U(0,10) o A | W ~ N(5 + 1.5 W, 2^2) (sin truncar a [0,10]).
-OJO: las funciones g(w) NO son las del paper (el paper usa saltos en w y sin(7 pi w));
-aqui son 0.5 w + 0.25 w^2, esa misma por (W > 0), y un DGP 3 propio.
-Los resultados no son comparables numericamente con el paper.
+`W ~ N(0,1)`; `Y = 3 sin(1.5 A) + 0.5 A + g(W) + (A - 5) g(W) + N(0,1)`, con `g` segun el DGP
+(ver [dgp_g_w()]). Tratamiento `"uniform"`: `A ~ U(0, 10)`. Tratamiento `"normal"`:
+`A | W ~ N(5 + 1.5 W, 2^2)` truncada a `[0, 10]` (muestreo por inversion, sin masa en los bordes).
 }

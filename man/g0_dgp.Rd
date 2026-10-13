@@ -2,7 +2,7 @@
 % Please edit documentation in R/04-dgp.R
 \name{g0_dgp}
 \alias{g0_dgp}
-\title{Densidad condicional verdadera g0(a | w)}
+\title{Densidad condicional verdadera g0(a | w); vale 0 fuera de [0, 10]}
 \usage{
 g0_dgp(a, w, treatment = c("uniform", "normal"))
 }
@@ -11,8 +11,8 @@ g0_dgp(a, w, treatment = c("uniform", "normal"))
 
 \item{w}{Covariable.}
 
-\item{treatment}{"uniform" o "normal".}
+\item{treatment}{"uniform" o "normal" (normal truncada a [0, 10]).}
 }
 \description{
-Densidad condicional verdadera g0(a | w)
+Densidad condicional verdadera g0(a | w); vale 0 fuera de [0, 10]
 }

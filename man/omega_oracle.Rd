@@ -2,7 +2,7 @@
 % Please edit documentation in R/04-dgp.R
 \name{omega_oracle}
 \alias{omega_oracle}
-\title{Densidad marginal verdadera de A (oraculo)}
+\title{Densidad marginal verdadera de A (oraculo exacto)}
 \usage{
 omega_oracle(a, treatment = c("uniform", "normal"))
 }
@@ -12,5 +12,6 @@ omega_oracle(a, treatment = c("uniform", "normal"))
 \item{treatment}{"uniform" o "normal".}
 }
 \description{
-Densidad marginal verdadera de A (oraculo)
+Caso "normal": integral numerica de `g0(a | w) dN(w)` sobre una rejilla fina de `w`,
+tabulada una vez e interpolada.
 }

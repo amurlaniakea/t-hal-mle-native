@@ -7,7 +7,9 @@
 # continua desde la ultima replica guardada.
 #
 # Uso:
-#   Rscript experiments/mc_paper.R <dgp 1|2|3> <uniform|normal> <n> <B> <outdir> [cores=1] [seed0=20261012]
+#   Rscript experiments/mc_paper.R <dgp 1|2|3> <uniform|normal> <n> <B> <outdir> [cores=1] [seed0=20261012] [w_cap]
+#   w_cap: "defecto" (sqrt(n) log(n/5), por defecto), "obs_max" o un numero (p. ej. 3). Con w_cap o seed0 distintos
+#   del defecto, el nombre del .rds lleva el sufijo _cap<x> y/o _s<seed0>, asi no se pisan escenarios.
 #
 # Requiere el paquete instalado:  R CMD INSTALL thalnative_0.0.1.tar.gz
 suppressMessages(library(thalnative))
@@ -18,6 +20,11 @@ dgp <- as.integer(args[1]); trt <- args[2]; n <- as.integer(args[3]); B <- as.in
 outdir <- args[5]
 cores <- if (length(args) >= 6) as.integer(args[6]) else 1L
 seed0 <- if (length(args) >= 7) as.integer(args[7]) else 20261012L
+wcap_arg <- if (length(args) >= 8) args[8] else "defecto"
+stopifnot(wcap_arg %in% c("defecto", "obs_max") || !is.na(suppressWarnings(as.numeric(wcap_arg))))
+wcap <- if (wcap_arg == "defecto") NULL else if (wcap_arg == "obs_max") "obs_max" else as.numeric(wcap_arg)
+suffix <- paste0(if (wcap_arg != "defecto") paste0("_cap", wcap_arg) else "",
+                 if (seed0 != 20261012L) paste0("_s", seed0) else "")
 stopifnot(dgp %in% 1:3, trt %in% c("uniform", "normal"))
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 
@@ -56,7 +63,7 @@ one_rep <- function(b) {
   d <- sim_paper(n, dgp, trt)
   t0 <- Sys.time()
   r <- tryCatch(suppressWarnings(
-    thal_fit(d$A, d$W, d$Y, grid, k_targeting = 1L, k_Q = k_Q, n_proj = 500L, seed = seed0 + b)),
+    thal_fit(d$A, d$W, d$Y, grid, k_targeting = 1L, k_Q = k_Q, n_proj = 500L, w_cap = wcap, seed = seed0 + b)),
     error = function(e) conditionMessage(e))
   if (is.character(r)) return(list(ok = FALSE, msg = r, b = b))
   m <- length(grid)
@@ -65,7 +72,7 @@ one_rep <- function(b) {
        se = r$ci$se, size = r$size, secs = as.numeric(difftime(Sys.time(), t0, units = "secs")))
 }
 
-f <- file.path(outdir, sprintf("dgp%d_%s_n%d.rds", dgp, trt, n))
+f <- file.path(outdir, sprintf("dgp%d_%s_n%d%s.rds", dgp, trt, n, suffix))
 res <- if (file.exists(f)) readRDS(f)$res else list()
 cat(sprintf("[%s] dgp=%d trt=%s n=%d B=%d cores=%d | ya hechas: %d\n", format(Sys.time(), "%F %T"), dgp, trt, n, B, cores, length(res)))
 todo <- setdiff(seq_len(B), vapply(res, function(x) x$b, 1L))
