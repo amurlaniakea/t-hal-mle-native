@@ -10,7 +10,9 @@
 #   Si con g oraculo tambien falla, el problema no es la estimacion de g_n sino el targeting
 #   con pesos omega/g enormes en las colas.
 #
-# Uso: Rscript experiments/mc_wcap.R <dgp 1|2|3> <n> <B> <outdir> [cores=1] [seed0=20261012]
+# Uso: Rscript experiments/mc_wcap.R <dgp 1|2|3> <n> <B> <outdir> [cores=1] [seed0=20261012] [caps] [nuis]
+#   caps: lista separada por comas; "defecto", "obs_max" o un numero. Por defecto: defecto,obs_max,10,5
+#   nuis: "both" (g/omega estimadas y oraculo; por defecto) o "est" (solo estimadas, mas rapido)
 suppressMessages(library(thalnative))
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) < 4) stop("Uso: Rscript mc_wcap.R <dgp> <n> <B> <outdir> [cores] [seed0]")
@@ -21,7 +23,12 @@ trt <- "normal"
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 grid <- seq(1, 9, length.out = 25); tr <- true_drc(grid, dgp)
 k_Q <- if (dgp == 3) 1L else 0L
-caps <- list(defecto = NULL, obs_max = "obs_max", cap10 = 10, cap5 = 5)
+caps_arg <- if (length(args) >= 7) args[7] else "defecto,obs_max,10,5"
+nuis_arg <- if (length(args) >= 8) args[8] else "both"
+stopifnot(nuis_arg %in% c("both", "est"))
+tok <- strsplit(caps_arg, ",")[[1]]
+caps <- setNames(vector("list", length(tok)), ifelse(grepl("^[0-9.]+$", tok), paste0("cap", tok), tok))
+for (i in seq_along(tok)) caps[i] <- list(if (tok[i] == "defecto") NULL else if (tok[i] == "obs_max") "obs_max" else as.numeric(tok[i]))
 
 one_rep <- function(b) {
   set.seed(seed0 + b)
@@ -31,6 +38,7 @@ one_rep <- function(b) {
     nuis <- list(
       est  = list(g = fit_g_native(d$A, d$W, n_bins = 5L), om = fit_omega_kde_native(d$A)),
       orac = list(g = function(a, w) g0_dgp(a, w, trt),    om = function(a) omega_oracle(a, trt)))
+    if (nuis_arg == "est") nuis$orac <- NULL
     m <- length(grid)
     hal <- colMeans(matrix(Q_fun(rep(grid, each = n), rep(d$W, times = m)), n, m))
     est <- list()
@@ -44,7 +52,7 @@ one_rep <- function(b) {
   out
 }
 
-f <- file.path(outdir, sprintf("wcap_dgp%d_n%d.rds", dgp, n))
+f <- file.path(outdir, sprintf("wcap_dgp%d_n%d_s%d.rds", dgp, n, seed0))
 res <- if (file.exists(f)) readRDS(f)$res else list()
 cat(sprintf("[%s] wcap dgp=%d n=%d B=%d cores=%d | ya hechas: %d\n", format(Sys.time(), "%F %T"), dgp, n, B, cores, length(res)))
 todo <- setdiff(seq_len(B), vapply(res, function(x) x$b, 1L))

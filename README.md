@@ -96,6 +96,20 @@ Lectura (con las limitaciones de B = 50 y un solo n):
   1.3 y 2.1 del plug-in HAL). El paper reporta que T-HAL tambien gana con tratamiento normal; aqui no se reproduce.
 - La cobertura de Wald queda por debajo del 0.95 nominal en todos los escenarios.
 
+### Topes de peso (exploratorio)
+
+n = 500, B = 50, tratamiento normal, g y omega estimadas
+(`experiments/results/wcap_exploratorio_n500_B50.csv`). RMSE medio sobre 25 dosis:
+
+| DGP | plug-in HAL | T-HAL tope por defecto | obs_max | tope 10 | tope 5 |
+|---|---|---|---|---|---|
+| 1 | 1.29 | 5.43 | 1.23 | 1.49 | 1.05 |
+| 2 | 1.23 | 4.32 | 1.07 | 1.22 | 0.99 |
+
+Con el tope del paper (sqrt(n) log(n/5), aprox. 103) T-HAL se dispara en las dosis extremas; con topes mas
+estrictos mejora al plug-in HAL. Con g y omega oraculo el resultado es parecido, asi que la causa no es la
+estimacion de g. El tope se compararon en la misma simulacion: es evidencia exploratoria, no confirmada.
+
 ## Tests
 
 cd ~/repos/t-hal-mle-native
