@@ -73,6 +73,29 @@ Preguntas resueltas:
 - Q-05: Sin Sigma^-1 por defecto
 - Q-17: Nudos estrictamente interiores para evitar colinealidad
 
+## Evidencia: Monte Carlo piloto con los DGP del paper
+
+n = 500, B = 50 replicas por escenario, DGP exactos de la seccion 7.1 del paper
+(`experiments/mc_paper.R`; resumen en `experiments/results/piloto_n500_B50.csv`).
+RMSE medio sobre 25 dosis en [1, 9]; "T-HAL mejor" = replicas de 50 con menor RMSE que el plug-in HAL.
+
+| DGP | tratamiento | RMSE HAL | RMSE T-HAL | T-HAL mejor | cobertura Wald |
+|---|---|---|---|---|---|
+| 1 | uniforme | 1.17 | 0.67 | 50 | 0.81 |
+| 2 | uniforme | 1.07 | 0.68 | 50 | 0.81 |
+| 3 | uniforme | 1.28 | 0.77 | 47 | 0.92 |
+| 1 | normal | 1.10 | 2.49 | 17 | 0.77 |
+| 2 | normal | 1.06 | 2.14 | 18 | 0.72 |
+| 3 | normal | 1.71 | 3.10 | 10 | 0.81 |
+
+Lectura (con las limitaciones de B = 50 y un solo n):
+
+- Con tratamiento uniforme, T-HAL mejora al plug-in HAL en RMSE y sesgo, en linea con el paper.
+- Con tratamiento normal (con confusion), T-HAL empeora: en el DGP 1 mejora en las dosis centrales,
+  pero el error se dispara en los extremos del rango de dosis (RMSE 5.1 en a = 1 y 23.0 en a = 9, frente a
+  1.3 y 2.1 del plug-in HAL). El paper reporta que T-HAL tambien gana con tratamiento normal; aqui no se reproduce.
+- La cobertura de Wald queda por debajo del 0.95 nominal en todos los escenarios.
+
 ## Tests
 
 cd ~/repos/t-hal-mle-native
