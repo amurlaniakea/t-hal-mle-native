@@ -10,7 +10,7 @@ Estado: v0.0.1 EXPERIMENTAL. 80 expectativas (27 bloques de test) pasando, 20 fu
 - LASSO nativo: Coordinate Descent con warm starts y mantenimiento de residuo.
 - Base HAL segun van der Laan (2023): terminos de borde, nudos estrictamente interiores y escalado a [0,1] (sin colinealidad; rango completo verificado). No comparada con hal9001.
 - Nuisances nativos: KDE para omega, HAL bivariado con CV para Q, KDE por bins para g (g_n NO es el estimador HAL de densidad del paper).
-- Inferencia (experimental): curva de influencia del Lemma 3.1 (componentes Q_bar y Q_W, con Sigma^+) + IC de Wald puntuales. Con nuisances oraculo, DGP 1, n = 300 y 80 replicas la cobertura de Wald medida fue ~0.73 (nominal 0.95): aun no es fiable. Ver SPEC/decisions.md (D-0004).
+- Inferencia (experimental): curva de influencia del Lemma 3.1 (componentes Q_bar y Q_W, con Sigma^+) + IC de Wald puntuales. En el piloto con los DGP exactos del paper (n = 500, B = 50, nuisances estimadas) la cobertura de Wald fue de 0.72 a 0.92 segun el escenario (nominal 0.95): aun no es fiable. Causas candidatas, no probadas: seleccion LASSO data-adaptativa tratada como sieve fijo y residuos dentro de muestra (el paper hace cross-fitting K = 2 para la varianza). Ver SPEC/decisions.md (D-0004).
 
 ## Instalacion
 

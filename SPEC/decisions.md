@@ -30,6 +30,8 @@ Estado: EXPERIMENTAL. Con nuisances oraculo (Q mal especificado, DGP 1 uniforme,
 (p. ej. 0.22 vs 0.66 en una dosis central) y la cobertura de Wald media fue 0.73 (nominal 0.95).
 Causas candidatas, no probadas: seleccion LASSO data-adaptativa tratada como sieve fijo,
 residuos dentro de muestra (el paper hace cross-fitting K = 2 para la varianza).
+Actualizacion 2026-10-14: el 0.73 se midio con el DGP anterior (ver D-0011). Con los DGP exactos y nuisances
+estimadas (piloto n = 500, B = 50) la cobertura de Wald va de 0.72 a 0.92. Falta medirla con topes de peso bajos.
 
 **D-0005 -- Medida de integracion de A**
 Estado: tomada.
