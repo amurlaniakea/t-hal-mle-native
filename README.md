@@ -77,7 +77,7 @@ Preguntas resueltas:
 
 n = 500, B = 50 replicas por escenario, DGP exactos de la seccion 7.1 del paper
 (`experiments/mc_paper.R`; resumen en `experiments/results/piloto_n500_B50.csv`).
-RMSE medio sobre 25 dosis en [1, 9]; "T-HAL mejor" = replicas de 50 con menor RMSE que el plug-in HAL.
+RMSE medio por dosis (media de los 25 RMSE por dosis, dosis en [1, 9]); "T-HAL mejor" = replicas de 50 con menor RMSE que el plug-in HAL.
 
 | DGP | tratamiento | RMSE HAL | RMSE T-HAL | T-HAL mejor | cobertura Wald |
 |---|---|---|---|---|---|
@@ -99,7 +99,7 @@ Lectura (con las limitaciones de B = 50 y un solo n):
 ### Topes de peso (exploratorio)
 
 n = 500, B = 50, tratamiento normal, g y omega estimadas
-(`experiments/results/wcap_exploratorio_n500_B50.csv`). RMSE medio sobre 25 dosis:
+(`experiments/results/wcap_exploratorio_n500_B50.csv`). RMSE agregado sobre las 25 dosis y todas las replicas (no comparable en nivel con el RMSE medio por dosis de la tabla del piloto; las diferencias frente al HAL si lo son):
 
 | DGP | plug-in HAL | T-HAL tope por defecto | obs_max | tope 10 | tope 5 |
 |---|---|---|---|---|---|
@@ -115,7 +115,7 @@ estimacion de g. Los topes se compararon en la misma simulacion: es evidencia ex
 n = 500, B = 60, tratamiento normal, g y omega estimadas, semilla base 777001
 (`experiments/results/wcap_confirmacion_n500_B60_s777001.csv`). Los topes (3, 5, 8, `obs_max` y el del paper)
 se fijaron antes de correr, con semillas distintas a las del experimento exploratorio.
-RMSE medio sobre 25 dosis:
+RMSE agregado sobre las 25 dosis y todas las replicas (no comparable en nivel con el RMSE medio por dosis de la tabla del piloto; las diferencias frente al HAL si lo son):
 
 | DGP | plug-in HAL | T-HAL tope paper | tope 3 | tope 5 | tope 8 | obs_max |
 |---|---|---|---|---|---|---|
@@ -146,6 +146,36 @@ Lectura (n = 500 y tratamiento normal unicamente):
   tope de 3 equivale a truncar a 3 veces el peso medio (el del paper, ~103, a ~100 veces).
 - Aun no hay evidencia de cobertura de Wald con tope bajo, ni de n = 1000 o 2000. Por eso el tope por defecto
   del paquete sigue siendo el del paper; `w_cap` es una opcion explicita.
+
+### Cobertura con topes bajos (semilla nueva)
+
+n = 500, B = 60, tratamiento normal, semilla base 888001, nuisances estimadas
+(`experiments/results/cobertura_topes_n500_B60_s888001.csv`; `mc_paper.R ... 888001 <tope>`).
+RMSE medio por dosis, como en la tabla del piloto:
+
+| DGP | tope | RMSE HAL | RMSE T-HAL | dif. frente a HAL (EE) | cob. Wald | cob. MC-SE | ancho Wald | ancho MC-SE |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 3 | 1.10 | 0.81 | -0.34 (0.059) | 0.82 | 0.94 | 1.95 | 3.07 |
+| 1 | 2 | 1.10 | 0.74 | -0.44 (0.042) | 0.81 | 0.94 | 1.86 | 2.81 |
+| 2 | 3 | 1.12 | 0.82 | -0.39 (0.035) | 0.75 | 0.92 | 1.94 | 2.97 |
+| 2 | 2 | 1.12 | 0.79 | -0.42 (0.029) | 0.73 | 0.92 | 1.82 | 2.86 |
+| 3 | 3 | 1.64 | 1.15 | -0.19 (0.085) | 0.87 | 0.93 | 3.62 | 4.33 |
+| 3 | 2 | 1.64 | 1.08 | -0.31 (0.079) | 0.87 | 0.93 | 3.37 | 4.03 |
+
+Con el tope del paper (piloto, semilla distinta) la cobertura de Wald fue 0.77 / 0.72 / 0.81 y el ancho MC-SE
+9.1 / 7.9 / 11.9. Lectura (n = 500 y tratamiento normal; semillas y B distintos entre piloto y esta tanda):
+
+- Un tope bajo reduce el ancho MC-SE a un tercio y mantiene la ventaja sobre el plug-in HAL, pero la cobertura de
+  Wald solo sube a 0.73-0.87: el IC de Wald sigue siendo demasiado estrecho (ancho Wald / ancho MC-SE de 0.64-0.66
+  en los DGP 1 y 2 y 0.84 en el DGP 3).
+- El tope no explica por si solo el defecto: con tratamiento uniforme (pesos iguales a 1) el piloto ya daba una
+  cobertura de Wald de 0.81 / 0.81 / 0.92.
+- Por dosis (`experiments/diag_cobertura.R`): el cociente SE medio / sd Monte Carlo es menor que 1 en casi todas las
+  dosis de los DGP 1 y 2 (0.44-0.93 con tope 2) y mas bajo en a = 9 en los tres DGP (0.33-0.56). En el DGP 3 el SE es
+  adecuado o conservador en las dosis 1-7 y la infracobertura se concentra en a = 8-9. En el DGP 2 el sesgo es de
+  0.5-0.7 desviaciones tipicas en varias dosis (a = 1, 2, 3, 7), de modo que el sesgo tambien contribuye.
+- Las causas de D-0004 (LASSO data-adaptativo tratado como fijo, residuos dentro de muestra) siguen sin
+  probarse; este experimento no las distingue de la estimacion de g y omega.
 
 ## Tests
 

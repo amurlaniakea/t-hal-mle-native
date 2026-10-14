@@ -14,3 +14,12 @@
   topes: paper, 3, 5, 8, `obs_max`; solo nuisances estimadas. Lanzado con
   `Rscript experiments/mc_wcap.R <dgp> 500 60 ~/mc_out_conf 6 777001 "defecto,3,5,8,obs_max" est`.
 - Resumenes generados con `experiments/mc_wcap_summary.R`.
+
+# Cobertura con topes bajos
+
+- `cobertura_topes_n500_B60_s888001.csv`: DGP 1-3, n = 500, B = 60, tratamiento normal, semilla base 888001;
+  topes 3 y 2. Lanzado con `Rscript experiments/mc_paper.R <dgp> normal 500 60 ~/mc_out_cov 6 888001 <tope>`
+  y resumido con `experiments/mc_summary.R`.
+- `experiments/diag_cobertura.R <outdir>`: cobertura de Wald, SE medio / sd Monte Carlo y sesgo / sd por dosis.
+- Nota: el RMSE de `mc_summary.R` es la media de los RMSE por dosis; el de `mc_wcap_summary.R` es el RMSE
+  agregado sobre dosis y replicas. No son comparables en nivel (las diferencias frente al HAL si).
