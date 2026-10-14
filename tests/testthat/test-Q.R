@@ -47,3 +47,12 @@ test_that("fit_Q_hal_native recupera un Q0 suave conocido", {
   # Umbral relajado para acomodar el escalado y la variabilidad del CV
   expect_lt(rmse, 2.0)
 })
+
+test_that("fit_Q_hal_native: la prediccion no depende del rango de los puntos evaluados (k = 1)", {
+  set.seed(11); n <- 200
+  W <- rnorm(n); A <- runif(n, 0, 10); Y <- sin(A) + W + rnorm(n, 0, 0.3)
+  Qf <- fit_Q_hal_native(A, W, Y, k = 1L, n_knots = 6L, nfolds = 3L, seed = 1)
+  full <- Qf(A, W)
+  expect_equal(Qf(A[1:50], W[1:50]), full[1:50])
+  expect_equal(Qf(c(2, 8), c(0, 0)), Qf(c(2, 8, 1, 9), c(0, 0, 0, 0))[1:2])
+})
