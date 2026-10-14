@@ -5,7 +5,8 @@
 # Monte Carlo con cross-fitting K=2 para la varianza.
 #
 # Uso:
-#   Rscript experiments/mc_cf.R <dgp 1|2|3> <normal> <n> <B> <outdir> [cores=1] [seed0=111001] [w_cap]
+#   Rscript experiments/mc_cf.R <dgp 1|2|3> <normal> <n> <B> <outdir> [cores=1] [seed0=111001] [w_cap] [nuis=est|orac_gw]
+#   Guarda se (cross-fitting) y se_insample (residuos en muestra) del MISMO ajuste: comparacion pareada.
 
 suppressMessages(library(thalnative))
 
@@ -16,9 +17,14 @@ outdir <- args[5]
 cores <- if (length(args) >= 6) as.integer(args[6]) else 1L
 seed0 <- if (length(args) >= 7) as.integer(args[7]) else 111001L
 wcap_arg <- if (length(args) >= 8) args[8] else "3"
+nuis_arg <- if (length(args) >= 9) args[9] else "est"   # est | orac_gw (g y omega oraculo; Q se ajusta)
+stopifnot(nuis_arg %in% c("est", "orac_gw"))
+gf <- if (nuis_arg == "orac_gw") function(a, w) g0_dgp(a, w, "normal") else NULL
+of <- if (nuis_arg == "orac_gw") function(a) omega_oracle(a, "normal") else NULL
 stopifnot(dgp == 1 || dgp == 2 || dgp == 3, trt == "normal")
 wcap <- if (wcap_arg == "defecto") NULL else if (wcap_arg == "obs_max") "obs_max" else as.numeric(wcap_arg)
-suffix <- paste0("_cf_cap", wcap_arg, if (seed0 != 111001L) paste0("_s", seed0) else "")
+suffix <- paste0("_cf_cap", wcap_arg, if (seed0 != 111001L) paste0("_s", seed0) else "",
+                 if (nuis_arg != "est") paste0("_", nuis_arg) else "")
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 
 g_w <- function(w, dgp) switch(dgp,
@@ -48,13 +54,13 @@ one_rep <- function(b) {
   t0 <- Sys.time()
   r <- tryCatch(suppressWarnings(
     thal_fit(d$A, d$W, d$Y, grid, k_targeting = 1L, k_Q = k_Q, n_proj = 500L, 
-             w_cap = wcap, n_cf = 2L, seed = seed0 + b)),
+             w_cap = wcap, n_cf = 2L, g_fun = gf, omega_fun = of, seed = seed0 + b)),
     error = function(e) conditionMessage(e))
   if (is.character(r)) return(list(ok = FALSE, msg = r, b = b))
   m <- length(grid)
   Qm <- matrix(r$nuisance$Q_fun(rep(grid, each = n), rep(d$W, times = m)), n, m)
   list(ok = TRUE, b = b, psi_hat = r$psi_hat, psi_plugin = r$psi_plugin, psi_hal = colMeans(Qm),
-       se = r$ci$se, size = r$size, secs = as.numeric(difftime(Sys.time(), t0, units = "secs")))
+       se = r$ci$se, se_insample = r$ci_insample$se, size = r$size, secs = as.numeric(difftime(Sys.time(), t0, units = "secs")))
 }
 
 f <- file.path(outdir, sprintf("dgp%d_%s_n%d%s.rds", dgp, trt, n, suffix))

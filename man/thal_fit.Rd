@@ -20,6 +20,9 @@ thal_fit(
   n_proj = 200L,
   nlambda = 50L,
   nfolds_Q = 5L,
+  n_cf = 1L,
+  g_fun = NULL,
+  omega_fun = NULL,
   seed = NULL
 )
 }
@@ -54,7 +57,18 @@ thal_fit(
 
 \item{nfolds_Q}{Folds de validacion cruzada del HAL del resultado.}
 
+\item{n_cf}{Folds de cross-fitting para la varianza (1 = sin CF, 2 = K-fold CF).}
+
+\item{g_fun}{Opcional: funcion `function(a, w)` con la densidad condicional de A dado W para usar en lugar de la estimada
+(p. ej. un oraculo en simulaciones). Por defecto se estima con [fit_g_native()].}
+
+\item{omega_fun}{Opcional: funcion `function(a)` con la densidad marginal de A para usar en lugar de la estimada.}
+
 \item{seed}{Semilla para reproducibilidad.}
+}
+\value{
+Lista con `psi_hat`, `psi_plugin`, `ci` (IC de Wald; con `n_cf = 2` usa residuos fuera de fold),
+`ci_insample` (IC con residuos en muestra, solo si `n_cf = 2`; mismo ajuste, para comparar pareado) y diagnosticos.
 }
 \description{
 Pipeline completo del T-HAL-MLE nativo

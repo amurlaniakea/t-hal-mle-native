@@ -19,7 +19,12 @@
 #' @param nlambda Valores de lambda del camino LASSO.
 #' @param nfolds_Q Folds de validacion cruzada del HAL del resultado.
 #' @param n_cf Folds de cross-fitting para la varianza (1 = sin CF, 2 = K-fold CF).
+#' @param g_fun Opcional: funcion `function(a, w)` con la densidad condicional de A dado W para usar en lugar de la estimada
+#'   (p. ej. un oraculo en simulaciones). Por defecto se estima con [fit_g_native()].
+#' @param omega_fun Opcional: funcion `function(a)` con la densidad marginal de A para usar en lugar de la estimada.
 #' @param seed Semilla para reproducibilidad.
+#' @return Lista con `psi_hat`, `psi_plugin`, `ci` (IC de Wald; con `n_cf = 2` usa residuos fuera de fold),
+#'   `ci_insample` (IC con residuos en muestra, solo si `n_cf = 2`; mismo ajuste, para comparar pareado) y diagnosticos.
 #' @export
 thal_fit <- function(A, W, Y, grid,
                      k_targeting = 1L, k_Q = 0L,
@@ -30,14 +35,16 @@ thal_fit <- function(A, W, Y, grid,
                      n_proj = 200L, nlambda = 50L,
                      nfolds_Q = 5L,
                      n_cf = 1L,
+                     g_fun = NULL, omega_fun = NULL,
                      seed = NULL) {
+  if (!n_cf %in% c(1L, 2L)) stop("n_cf debe ser 1 (sin cross-fitting) o 2")
   if (!is.null(seed)) set.seed(seed)
   n <- length(A)
 
-  omega_fun <- fit_omega_kde_native(A)
+  if (is.null(omega_fun)) omega_fun <- fit_omega_kde_native(A)
   Q_fun     <- fit_Q_hal_native(A, W, Y, k = k_Q, n_knots = n_knots_Q,
                                 nfolds = nfolds_Q, seed = seed)
-  g_fun     <- fit_g_native(A, W, n_bins = n_bins_g)
+  if (is.null(g_fun)) g_fun <- fit_g_native(A, W, n_bins = n_bins_g)
 
   res <- thal_core_native(
     A = A, W = W, Y = Y,
@@ -53,9 +60,12 @@ thal_fit <- function(A, W, Y, grid,
   sel <- res$selected
   eps <- res$eps
 
+  ci_insample <- NULL
   if (length(sel) > 0) {
     # Cross-fitting K=2 para la varianza si n_cf == 2
     if (n_cf == 2L) {
+      # IC con residuos en muestra, del MISMO ajuste, para comparar pareado con el de cross-fitting
+      ci_insample <- wald_ci(res$psi_hat, variance_estimator(influence_curve(Y, res$ic_inputs)))
       folds <- rep(1:2, length.out = n)
       Qstar_A_cf <- numeric(n)
       
@@ -95,6 +105,7 @@ thal_fit <- function(A, W, Y, grid,
     psi_hat    = res$psi_hat,
     psi_plugin = res$psi_plugin,
     ci         = ci,
+    ci_insample = ci_insample,
     ic_matrix  = ic_mat,
     grid       = grid,
     eps        = eps,
