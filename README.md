@@ -78,7 +78,7 @@ Preguntas resueltas:
 > **Aviso (2026-10-15).** Hasta el commit `f4d86a5`, `Q_fun` escalaba la dosis con el rango de los puntos donde se
 > evaluaba y no con el del entrenamiento. Solo afecta a `k_Q = 1` (DGP 3): el plug-in HAL de referencia (`psi_hal`) y
 > `psi_plugin` evaluados en la rejilla salian mal en el DGP 3, asi que **las comparaciones T-HAL frente a HAL del DGP 3
-> de las tablas de esta seccion (piloto, topes y cobertura) no son validas** y se estan rehaciendo. No afecta a los
+> de las tablas de esta seccion (piloto, topes y cobertura) no son validas** (la comparacion corregida esta en "DGP 3 con el plug-in HAL corregido"). No afecta a los
 > DGP 1 y 2 (`k_Q = 0`), ni a `psi_hat` ni a su error estandar.
 
 n = 500, B = 50 replicas por escenario, DGP exactos de la seccion 7.1 del paper
@@ -89,10 +89,10 @@ RMSE medio por dosis (media de los 25 RMSE por dosis, dosis en [1, 9]); "T-HAL m
 |---|---|---|---|---|---|
 | 1 | uniforme | 1.17 | 0.67 | 50 | 0.81 |
 | 2 | uniforme | 1.07 | 0.68 | 50 | 0.81 |
-| 3 | uniforme | 1.28 | 0.77 | 47 | 0.92 |
+| 3 | uniforme | 1.28 (invalido) | 0.77 | 47 (invalido) | 0.92 |
 | 1 | normal | 1.10 | 2.49 | 17 | 0.77 |
 | 2 | normal | 1.06 | 2.14 | 18 | 0.72 |
-| 3 | normal | 1.71 | 3.10 | 10 | 0.81 |
+| 3 | normal | 1.71 (invalido) | 3.10 | 10 (invalido) | 0.81 |
 
 Lectura (con las limitaciones de B = 50 y un solo n):
 
@@ -127,12 +127,12 @@ RMSE agregado sobre las 25 dosis y todas las replicas (no comparable en nivel co
 |---|---|---|---|---|---|---|
 | 1 | 1.28 | 6.97 | 0.98 | 1.19 | 1.54 | 1.32 |
 | 2 | 1.24 | 5.32 | 0.92 | 1.04 | 1.22 | 1.13 |
-| 3 | 1.72 | 6.53 | 1.49 | 1.67 | 1.94 | 1.72 |
+| 3 | 1.72 (HAL invalido) | 6.53 | 1.49 | 1.67 | 1.94 | 1.72 |
 
 Diferencia de RMSE por replica frente al plug-in HAL (negativa = T-HAL mejor), con su error estandar entre
 parentesis, y replicas (de 60) en las que T-HAL gana:
 
-| tope | DGP 1 | DGP 2 | DGP 3 |
+| tope | DGP 1 | DGP 2 | DGP 3 (dif. frente a HAL invalida) |
 |---|---|---|---|
 | 3 | -0.36 (0.037), 55 | -0.37 (0.029), 58 | -0.25 (0.096), 40 |
 | 5 | -0.22 (0.063), 45 | -0.27 (0.041), 48 | -0.11 (0.110), 37 |
@@ -143,11 +143,10 @@ Lectura (n = 500 y tratamiento normal unicamente):
 
 - En los tres DGP el orden es el mismo: cuanto mas bajo el tope, mejor (3 < 5 < 8 en RMSE). El tope 3 es el mas
   bajo probado, asi que el optimo no esta acotado: puede estar por debajo.
-- La ganancia es clara en los DGP 1 y 2; en el DGP 3 es de unos 2.7 errores estandar con el tope 3 y el tope 5
-  apenas se distingue del plug-in HAL.
-- La mejora viene de las dosis centrales (RMSE ~0.43-0.58 frente a 0.80-1.51 del plug-in HAL). En los extremos la
-  mejora es modesta (DGP 1 y 2) o nula: en el DGP 3 con tope 3 el RMSE en extremos (2.15) y en a = 9 (4.26) es
-  peor que el del plug-in HAL (1.95 y 2.97).
+- La ganancia frente al plug-in HAL es clara en los DGP 1 y 2. La del DGP 3 de esta tabla no es valida (ver aviso);
+  el orden entre topes si se mantiene, porque todas las variantes comparten el mismo HAL.
+- En los DGP 1 y 2 la mejora viene de las dosis centrales (RMSE ~0.43-0.49 frente a 0.80-0.83 del plug-in HAL) y en
+  los extremos es modesta. Las cifras del DGP 3 frente al HAL de esta tabla no son validas (ver aviso).
 - Con tratamiento uniforme omega/g = 1 y el tope no actua. Con tratamiento normal, E[omega/g] = 1, asi que un
   tope de 3 equivale a truncar a 3 veces el peso medio (el del paper, ~103, a ~100 veces).
 - Aun no hay evidencia de cobertura de Wald con tope bajo, ni de n = 1000 o 2000. Por eso el tope por defecto
@@ -165,13 +164,13 @@ RMSE medio por dosis, como en la tabla del piloto:
 | 1 | 2 | 1.10 | 0.74 | -0.44 (0.042) | 0.81 | 0.94 | 1.86 | 2.81 |
 | 2 | 3 | 1.12 | 0.82 | -0.39 (0.035) | 0.75 | 0.92 | 1.94 | 2.97 |
 | 2 | 2 | 1.12 | 0.79 | -0.42 (0.029) | 0.73 | 0.92 | 1.82 | 2.86 |
-| 3 | 3 | 1.64 | 1.15 | -0.19 (0.085) | 0.87 | 0.93 | 3.62 | 4.33 |
-| 3 | 2 | 1.64 | 1.08 | -0.31 (0.079) | 0.87 | 0.93 | 3.37 | 4.03 |
+| 3 | 3 | n.v. | 1.15 | n.v. | 0.87 | 0.93 | 3.62 | 4.33 |
+| 3 | 2 | n.v. | 1.08 | n.v. | 0.87 | 0.93 | 3.37 | 4.03 |
 
 Con el tope del paper (piloto, semilla distinta) la cobertura de Wald fue 0.77 / 0.72 / 0.81 y el ancho MC-SE
 9.1 / 7.9 / 11.9. Lectura (n = 500 y tratamiento normal; semillas y B distintos entre piloto y esta tanda):
 
-- Un tope bajo reduce el ancho MC-SE a un tercio y mantiene la ventaja sobre el plug-in HAL, pero la cobertura de
+- Un tope bajo reduce el ancho MC-SE a un tercio y mantiene la ventaja sobre el plug-in HAL en los DGP 1 y 2, pero la cobertura de
   Wald solo sube a 0.73-0.87: el IC de Wald sigue siendo demasiado estrecho (ancho Wald / ancho MC-SE de 0.64-0.66
   en los DGP 1 y 2 y 0.84 en el DGP 3).
 - El tope no explica por si solo el defecto: con tratamiento uniforme (pesos iguales a 1) el piloto ya daba una
@@ -213,6 +212,26 @@ g y omega estimadas, el ancho medio del IC de Wald con cross-fitting es 2.40 / 2
 - Con g y omega oraculo (Q ajustada) el resultado casi no cambia (SE/sd +0.01 a +0.03; cobertura hasta +0.02): a este
   n, estimar g y omega no explica la subestimacion.
 - El valor por defecto del paquete sigue siendo `n_cf = 1`; `n_cf = 2` es una opcion para la inferencia.
+
+### DGP 3 con el plug-in HAL corregido
+
+Mismas corridas del cross-fitting pareado (n = 500, B = 60, tratamiento normal, tope 3, semilla base 222001, g y
+omega estimadas), ya con el paquete corregido (`f4d86a5`). RMSE medio por dosis:
+
+| DGP | RMSE HAL | RMSE T-HAL | dif. frente a HAL (EE) | T-HAL mejor en | sesgo abs. HAL / T-HAL |
+|---|---|---|---|---|---|
+| 1 | 1.095 | 0.784 | -0.367 (0.036) | 56 de 60 | 0.52 / 0.18 |
+| 2 | 1.081 | 0.775 | -0.347 (0.032) | 55 de 60 | 0.54 / 0.21 |
+| 3 | 0.966 | 1.109 | +0.346 (0.068) | 16 de 60 | 0.61 / 0.18 |
+
+Con g y omega oraculo el DGP 3 da 1.121, +0.347 (0.077) y 19 de 60. Lectura:
+
+- En el DGP 3, con el HAL bien evaluado, T-HAL tiene menos sesgo (0.18 frente a 0.61) pero mas RMSE que el plug-in HAL
+  y pierde en 44 de 60 replicas. El paper reporta que T-HAL gana en todos los DGP; aqui no se reproduce en el DGP 3
+  con `k_Q = 1`, tope 3 y n = 500.
+- En los DGP 1 y 2 el resultado se mantiene (T-HAL gana en 55-56 de 60).
+- Falta medir T-HAL frente al HAL corregido con otros topes en el DGP 3 y explorar el HAL del resultado (nudos y
+  orden) y n mayores antes de sacar conclusiones sobre la causa.
 
 ## Tests
 
