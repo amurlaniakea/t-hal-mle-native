@@ -2,7 +2,7 @@
 
 Implementacion nativa en R base del Targeted Highly Adaptive Lasso Minimum Loss Estimation (T-HAL-MLE) para curvas dosis-respuesta continuas.
 
-Estado: v0.0.1 EXPERIMENTAL. 80 expectativas (27 bloques de test) pasando, 20 funciones exportadas, 100% R base. Prototipo de investigacion: la inferencia aun no esta validada y varias piezas difieren del paper (ver SPEC/decisions.md).
+Estado: v0.0.1 EXPERIMENTAL. 91 expectativas (31 bloques de test) pasando, 20 funciones exportadas, 100% R base. Prototipo de investigacion: la inferencia aun no esta validada y varias piezas difieren del paper (ver SPEC/decisions.md).
 
 ## Caracteristicas
 
@@ -74,6 +74,12 @@ Preguntas resueltas:
 - Q-17: Nudos estrictamente interiores para evitar colinealidad
 
 ## Evidencia: Monte Carlo piloto con los DGP del paper
+
+> **Aviso (2026-10-15).** Hasta el commit `f4d86a5`, `Q_fun` escalaba la dosis con el rango de los puntos donde se
+> evaluaba y no con el del entrenamiento. Solo afecta a `k_Q = 1` (DGP 3): el plug-in HAL de referencia (`psi_hal`) y
+> `psi_plugin` evaluados en la rejilla salian mal en el DGP 3, asi que **las comparaciones T-HAL frente a HAL del DGP 3
+> de las tablas de esta seccion (piloto, topes y cobertura) no son validas** y se estan rehaciendo. No afecta a los
+> DGP 1 y 2 (`k_Q = 0`), ni a `psi_hat` ni a su error estandar.
 
 n = 500, B = 50 replicas por escenario, DGP exactos de la seccion 7.1 del paper
 (`experiments/mc_paper.R`; resumen en `experiments/results/piloto_n500_B50.csv`).
@@ -177,12 +183,43 @@ Con el tope del paper (piloto, semilla distinta) la cobertura de Wald fue 0.77 /
 - Las causas de D-0004 (LASSO data-adaptativo tratado como fijo, residuos dentro de muestra) siguen sin
   probarse; este experimento no las distingue de la estimacion de g y omega.
 
+### Cross-fitting K = 2 para la varianza (pareado)
+
+n = 500, B = 60, tratamiento normal, tope 3, semilla base 222001
+(`experiments/results/cf_pareado_n500_B60_s222001.csv`; `mc_cf.R`, resumen con `mc_cf_summary.R`). Cada replica
+produce `psi_hat` y DOS errores estandar del mismo ajuste: con residuos en muestra y con cross-fitting K = 2
+(`n_cf = 2`: residuos del Q inicial fuera de fold mas la correccion de targeting de la muestra completa). Es una
+variante propia, no verificada contra el procedimiento exacto del paper. `psi_hat` no cambia; el coste es ~70 % mas
+de tiempo por replica.
+
+| DGP | g y omega | cob. Wald en muestra | cob. Wald CF | dif. pareada (EE) | SE/sd en muestra | SE/sd CF |
+|---|---|---|---|---|---|---|
+| 1 | estimadas | 0.801 | 0.861 | +0.060 (0.0074) | 0.73 | 0.88 |
+| 1 | oraculo | 0.819 | 0.881 | +0.061 (0.0088) | 0.76 | 0.92 |
+| 2 | estimadas | 0.763 | 0.852 | +0.089 (0.0103) | 0.74 | 1.00 |
+| 2 | oraculo | 0.767 | 0.869 | +0.102 (0.0099) | 0.75 | 1.03 |
+| 3 | estimadas | 0.877 | 0.897 | +0.021 (0.0040) | 1.00 | 1.09 |
+| 3 | oraculo | 0.878 | 0.903 | +0.025 (0.0051) | 1.03 | 1.12 |
+
+`SE/sd` = SE medio dividido por la desviacion tipica Monte Carlo de `psi_hat`, promediado sobre las 25 dosis. Con
+g y omega estimadas, el ancho medio del IC de Wald con cross-fitting es 2.40 / 2.70 / 3.84 frente a un ancho MC-SE de
+2.97 / 2.89 / 4.29. Lectura (n = 500, tratamiento normal, tope 3, un solo conjunto de semillas):
+
+- El cross-fitting sube la cobertura de Wald de forma pareada (+0.02 a +0.10; unos 6-12 errores estandar en los
+  DGP 1 y 2) y acerca el SE a la dispersion real: de 0.73-0.74 a 0.88-1.00 en los DGP 1 y 2. Es coherente con que los
+  residuos en muestra del Q inicial subestimaban la varianza (causa candidata de D-0004).
+- La cobertura sigue por debajo de 0.95 (0.85-0.90), incluso en el DGP 2 con SE/sd cercano a 1. El sesgo medio es
+  de 0.23-0.32 desviaciones tipicas y quedan por separar la heterogeneidad por dosis y las colas no normales.
+- Con g y omega oraculo (Q ajustada) el resultado casi no cambia (SE/sd +0.01 a +0.03; cobertura hasta +0.02): a este
+  n, estimar g y omega no explica la subestimacion.
+- El valor por defecto del paquete sigue siendo `n_cf = 1`; `n_cf = 2` es una opcion para la inferencia.
+
 ## Tests
 
 cd ~/repos/t-hal-mle-native
 Rscript -e 'testthat::test_local(".")'
 
-80 expectativas (27 bloques `test_that`) en verde al 2026-10-13.
+91 expectativas (31 bloques `test_that`) en verde al 2026-10-15.
 
 ## Referencias
 
