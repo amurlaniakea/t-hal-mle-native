@@ -64,7 +64,8 @@ one_rep <- function(b) {
   m <- length(grid)
   Qm <- matrix(r$nuisance$Q_fun(rep(grid, each = n), rep(d$W, times = m)), n, m)
   list(ok = TRUE, b = b, psi_hat = r$psi_hat, psi_plugin = r$psi_plugin, psi_hal = colMeans(Qm),
-       se = r$ci$se, se_insample = r$ci_insample$se, size = r$size, secs = as.numeric(difftime(Sys.time(), t0, units = "secs")))
+       se = r$ci$se, se_insample = r$ci_insample$se,
+       var_R = r$ic_var_parts$var_R, var_S = r$ic_var_parts$var_S, cov_RS = r$ic_var_parts$cov_RS, size = r$size, secs = as.numeric(difftime(Sys.time(), t0, units = "secs")))
 }
 
 f <- file.path(outdir, sprintf("dgp%d_%s_n%d%s.rds", dgp, trt, n, suffix))

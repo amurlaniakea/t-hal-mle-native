@@ -24,7 +24,8 @@
 #' @param omega_fun Opcional: funcion `function(a)` con la densidad marginal de A para usar en lugar de la estimada.
 #' @param seed Semilla para reproducibilidad.
 #' @return Lista con `psi_hat`, `psi_plugin`, `ci` (IC de Wald; con `n_cf = 2` usa residuos fuera de fold),
-#'   `ci_insample` (IC con residuos en muestra, solo si `n_cf = 2`; mismo ajuste, para comparar pareado) y diagnosticos.
+#'   `ci_insample` (IC con residuos en muestra, solo si `n_cf = 2`; mismo ajuste, para comparar pareado), `ic_var_parts` (varianzas por dosis de las componentes
+#'   Q-barra y Q_W del IC: `var_R`, `var_S`, `cov_RS`; `se^2 = var_R + var_S + 2 cov_RS`) y diagnosticos.
 #' @export
 thal_fit <- function(A, W, Y, grid,
                      k_targeting = 1L, k_Q = 0L,
@@ -61,6 +62,7 @@ thal_fit <- function(A, W, Y, grid,
   eps <- res$eps
 
   ci_insample <- NULL
+  ic_var_parts <- NULL
   if (length(sel) > 0) {
     # Cross-fitting K=2 para la varianza si n_cf == 2
     if (n_cf == 2L) {
@@ -89,11 +91,15 @@ thal_fit <- function(A, W, Y, grid,
       ic_inputs_cf <- res$ic_inputs
       ic_inputs_cf$Qstar_A <- Qstar_A_cf
       ic_mat <- influence_curve(Y, ic_inputs_cf)
+      ic_used <- ic_inputs_cf
     } else {
       ic_mat <- influence_curve(Y, res$ic_inputs)
+      ic_used <- res$ic_inputs
     }
     
     var_hat <- variance_estimator(ic_mat)
+    pp <- influence_parts(Y, ic_used)
+    ic_var_parts <- list(var_R = colMeans(pp$R^2) / n, var_S = colMeans(pp$S^2) / n, cov_RS = colMeans(pp$R * pp$S) / n)
     ci <- wald_ci(res$psi_hat, var_hat)
   } else {
     ic_mat <- matrix(NA_real_, nrow = n, ncol = length(grid))
@@ -106,6 +112,7 @@ thal_fit <- function(A, W, Y, grid,
     psi_plugin = res$psi_plugin,
     ci         = ci,
     ci_insample = ci_insample,
+    ic_var_parts = ic_var_parts,
     ic_matrix  = ic_mat,
     grid       = grid,
     eps        = eps,

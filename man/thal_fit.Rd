@@ -68,7 +68,8 @@ thal_fit(
 }
 \value{
 Lista con `psi_hat`, `psi_plugin`, `ci` (IC de Wald; con `n_cf = 2` usa residuos fuera de fold),
-`ci_insample` (IC con residuos en muestra, solo si `n_cf = 2`; mismo ajuste, para comparar pareado) y diagnosticos.
+`ci_insample` (IC con residuos en muestra, solo si `n_cf = 2`; mismo ajuste, para comparar pareado), `ic_var_parts` (varianzas por dosis de las componentes
+Q-barra y Q_W del IC: `var_R`, `var_S`, `cov_RS`; `se^2 = var_R + var_S + 2 cov_RS`) y diagnosticos.
 }
 \description{
 Pipeline completo del T-HAL-MLE nativo
