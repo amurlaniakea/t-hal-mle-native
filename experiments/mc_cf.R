@@ -5,13 +5,13 @@
 # Monte Carlo con cross-fitting K=2 para la varianza.
 #
 # Uso:
-#   Rscript experiments/mc_cf.R <dgp 1|2|3> <normal> <n> <B> <outdir> [cores=1] [seed0=111001] [w_cap] [nuis=est|orac_gw]
+#   Rscript experiments/mc_cf.R <dgp 1|2|3> <normal|uniform> <n> <B> <outdir> [cores=1] [seed0=111001] [w_cap] [nuis=est|orac_gw]
 #   Guarda se (cross-fitting) y se_insample (residuos en muestra) del MISMO ajuste: comparacion pareada.
 
 suppressMessages(library(thalnative))
 
 args <- commandArgs(trailingOnly = TRUE)
-if (length(args) < 5) stop("Uso: Rscript mc_cf.R <dgp> <normal> <n> <B> <outdir> [cores] [seed0] [w_cap]")
+if (length(args) < 5) stop("Uso: Rscript mc_cf.R <dgp> <normal|uniform> <n> <B> <outdir> [cores] [seed0] [w_cap] [nuis]")
 dgp <- as.integer(args[1]); trt <- args[2]; n <- as.integer(args[3]); B <- as.integer(args[4])
 outdir <- args[5]
 cores <- if (length(args) >= 6) as.integer(args[6]) else 1L
@@ -19,9 +19,9 @@ seed0 <- if (length(args) >= 7) as.integer(args[7]) else 111001L
 wcap_arg <- if (length(args) >= 8) args[8] else "3"
 nuis_arg <- if (length(args) >= 9) args[9] else "est"   # est | orac_gw (g y omega oraculo; Q se ajusta)
 stopifnot(nuis_arg %in% c("est", "orac_gw"))
-gf <- if (nuis_arg == "orac_gw") function(a, w) g0_dgp(a, w, "normal") else NULL
-of <- if (nuis_arg == "orac_gw") function(a) omega_oracle(a, "normal") else NULL
-stopifnot(dgp == 1 || dgp == 2 || dgp == 3, trt == "normal")
+gf <- if (nuis_arg == "orac_gw") function(a, w) g0_dgp(a, w, trt) else NULL
+of <- if (nuis_arg == "orac_gw") function(a) omega_oracle(a, trt) else NULL
+stopifnot(dgp == 1 || dgp == 2 || dgp == 3, trt %in% c("normal", "uniform"))
 wcap <- if (wcap_arg == "defecto") NULL else if (wcap_arg == "obs_max") "obs_max" else as.numeric(wcap_arg)
 suffix <- paste0("_cf_cap", wcap_arg, if (seed0 != 111001L) paste0("_s", seed0) else "",
                  if (nuis_arg != "est") paste0("_", nuis_arg) else "")
@@ -36,7 +36,7 @@ sim_paper <- function(n, dgp, trt) {
   W <- rnorm(n)
   mu <- 5 + 1.5 * W
   lo <- pnorm((0 - mu) / 2); hi <- pnorm((10 - mu) / 2)
-  A <- mu + 2 * qnorm(runif(n, lo, hi))
+  A <- if (trt == "uniform") runif(n, 0, 10) else mu + 2 * qnorm(runif(n, lo, hi))
   gw <- g_w(W, dgp)
   Y <- 3 * sin(1.5 * A) + 0.5 * A + gw + (A - 5) * gw + rnorm(n)
   list(A = A, W = W, Y = Y)
