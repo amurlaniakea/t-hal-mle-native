@@ -65,14 +65,16 @@ fit_Q_hal_native <- function(A, W, Y, k = 0L, n_knots = 10L, nfolds = 5L,
                              nlambda = 30L, seed = NULL) {
   knots_A <- make_knots(A, n_knots)
   knots_W <- make_knots(W, n_knots)
-  Phi <- tensor_basis(A, W, knots_A, knots_W, k)
+  # Rangos de ENTRENAMIENTO: la prediccion debe escalar con ellos y no con el rango de los puntos nuevos
+  A_range <- range(A); W_range <- range(W)
+  Phi <- tensor_basis(A, W, knots_A, knots_W, k, A_range = A_range, W_range = W_range)
 
   cv <- cv_lasso(Phi, Y, nfolds = nfolds, nlambda = nlambda, seed = seed)
   fit_full <- lasso_path(Phi, Y, lambda = cv$lambda)
   beta <- fit_full$beta[, cv$lambda_min_idx]
 
   function(a, w) {
-    Phi_new <- tensor_basis(a, w, knots_A, knots_W, k)
+    Phi_new <- tensor_basis(a, w, knots_A, knots_W, k, A_range = A_range, W_range = W_range)
     as.numeric(Phi_new %*% beta)
   }
 }
