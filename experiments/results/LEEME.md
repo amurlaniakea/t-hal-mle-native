@@ -33,3 +33,13 @@
 - Aviso: los resultados del DGP 3 frente al plug-in HAL anteriores al commit `f4d86a5` (piloto, topes y cobertura)
   usan un `Q_fun` mal escalado para `k_Q = 1` y no son validos; los DGP 1 y 2 no se ven afectados.
 
+# Tratamiento uniforme, topes bajos del DGP 3 y tamano del sieve
+
+- `uniforme_cf_n500_B60_s333001.csv` / `uniforme_rmse_n500_B60_s333001.csv`: DGP 1-3, tratamiento uniforme, ventana por
+  defecto. `mc_cf_summary.R` y `mc_summary.R` sobre `mc_cf.R <dgp> uniform 500 60 ~/mc_out_cfu 6 333001 3 est`.
+- `dgp3_topes_bajos_cf_n500_B60_s444001.csv` / `dgp3_topes_bajos_rmse_n500_B60_s444001.csv`: DGP 3, tratamiento normal,
+  topes 2, 1.5 y 1 (`mc_cf.R 3 normal 500 60 ~/mc_out_d3caps 6 444001 <tope> est`).
+- `sieve_cf_n500_B60_s555001_c9-14.csv` / `sieve_rmse_n500_B60_s555001_c9-14.csv`: DGP 1-3, uniforme, ventana
+  `c1 = 9, c2 = 14` (`mc_cf.R <dgp> uniform 500 60 ~/mc_out_sieve 6 555001 3 est 9 14`).
+- El RMSE de los `*_rmse_*.csv` es la media de los RMSE por dosis (como `piloto_n500_B50.csv`).
+

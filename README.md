@@ -233,6 +233,57 @@ Con g y omega oraculo el DGP 3 da 1.121, +0.347 (0.077) y 19 de 60. Lectura:
 - Falta medir T-HAL frente al HAL corregido con otros topes en el DGP 3 y explorar el HAL del resultado (nudos y
   orden) y n mayores antes de sacar conclusiones sobre la causa.
 
+### Tratamiento uniforme (sin pesos) y tamano del working model
+
+n = 500, B = 60, tratamiento uniforme (omega/g = 1, el tope no actua), g y omega estimadas, cross-fitting K = 2.
+Ventana por defecto del sieve (tamano mediano 21; semilla 333001) y ventana mayor `c1 = 9, c2 = 14` (tamano mediano
+32-33; semilla 555001). Las semillas y las muestras son distintas entre ambas tandas
+(`experiments/results/uniforme_*_s333001.csv` y `sieve_*_s555001_c9-14.csv`).
+
+| DGP | ventana | dif. RMSE frente a HAL (EE) | T-HAL gana en | cob. Wald en muestra -> CF | SE/sd CF | cob. MC-SE | sesgo/sd | ancho MC-SE |
+|---|---|---|---|---|---|---|---|---|
+| 1 | defecto | -0.614 (0.020) | 60 de 60 | 0.822 -> 0.863 | 0.97 | 0.917 | 0.46 | 2.28 |
+| 1 | mayor | -0.446 (0.017) | 60 de 60 | 0.797 -> 0.859 | 1.02 | 0.952 | 0.25 | 2.85 |
+| 2 | defecto | -0.541 (0.021) | 60 de 60 | 0.831 -> 0.897 | 1.05 | 0.929 | 0.34 | 2.32 |
+| 2 | mayor | -0.366 (0.017) | 59 de 60 | 0.812 -> 0.887 | 1.11 | 0.947 | 0.22 | 2.89 |
+| 3 | defecto | -0.283 (0.034) | 51 de 60 | 0.923 -> 0.951 | 1.49 | 0.897 | 0.48 | 2.59 |
+| 3 | mayor | -0.270 (0.048) | 48 de 60 | 0.973 -> 0.983 | 1.72 | 0.949 | 0.28 | 3.05 |
+
+Lectura (n = 500, tratamiento uniforme; semillas distintas entre ventanas):
+
+- Sin pesos, T-HAL gana al plug-in HAL en los tres DGP, tambien en el DGP 3, como reporta el paper.
+- El cross-fitting sube la cobertura de Wald de forma pareada tambien aqui (+0.01 a +0.07).
+- Con la ventana por defecto la cobertura de MC-SE (con un SE ideal) es 0.90-0.93: el sesgo del working model
+  (0.34-0.48 desviaciones tipicas) marca un techo. Con la ventana mayor el sesgo baja a ~0.2-0.3 y la cobertura de
+  MC-SE llega a ~0.95, a costa de un IC mas ancho (+18 a +25 % de ancho MC-SE) y menos ventaja en RMSE.
+- La cobertura de Wald con la ventana mayor no mejora en los DGP 1 y 2 (0.86-0.89) aunque el SE medio sea correcto
+  (SE/sd 1.02-1.11) y el techo con SE ideal sea ~0.95: queda una subestimacion que no es de sesgo ni de tamano del
+  sieve y que se investiga (variabilidad del SE entre replicas, dosis extremas).
+- En el DGP 3 el SE esta sobrestimado (SE/sd 1.49 y 1.72): el 0.95-0.98 de cobertura de Wald viene de un IC
+  demasiado ancho y no indica un buen IC.
+- Un tamano de sieve mayor es un parametro (`c1`, `c2` de `thal_fit`), no el valor por defecto.
+
+### DGP 3 con tratamiento normal y topes bajos
+
+n = 500, B = 60, semilla base 444001 (mismos datos en los tres topes), g y omega estimadas, cross-fitting K = 2,
+HAL corregido (RMSE medio por dosis 1.03). `experiments/results/dgp3_topes_bajos_*_s444001.csv`.
+
+| tope | RMSE T-HAL | dif. frente a HAL (EE) | T-HAL gana en | cob. Wald CF | SE/sd CF | cob. MC-SE | sesgo abs. T-HAL |
+|---|---|---|---|---|---|---|---|
+| 2 | 1.009 | +0.102 (0.063) | 28 de 60 | 0.903 | 1.12 | 0.931 | 0.157 |
+| 1.5 | 0.974 | +0.046 (0.056) | 28 de 60 | 0.889 | 1.09 | 0.930 | 0.158 |
+| 1 | 0.938 | -0.0004 (0.046) | 33 de 60 | 0.867 | 0.97 | 0.936 | 0.149 |
+
+Con el tope 3 (otra semilla) la diferencia era +0.346 (EE 0.068). Lectura:
+
+- Bajar el tope mejora a T-HAL de forma monotona y con tope 1 empata con el plug-in HAL, pero no lo supera. Con
+  tratamiento uniforme T-HAL si gana (-0.28 en el DGP 3), asi que la varianza de los pesos explica buena parte de la
+  perdida pero no toda.
+- T-HAL conserva menos sesgo que el HAL (0.15-0.16 frente a 0.64) y pierde por varianza.
+- RMSE y cobertura van en direcciones opuestas: con el tope mas bajo el SE baja mas deprisa que la dispersion real
+  y la cobertura de Wald cae de 0.903 a 0.867. Ningun tope es el mejor para las dos cosas.
+- No se reproduce que T-HAL gane con tratamiento normal en el DGP 3 con `k_Q = 1` y n = 500.
+
 ## Tests
 
 cd ~/repos/t-hal-mle-native
