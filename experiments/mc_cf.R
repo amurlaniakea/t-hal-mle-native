@@ -5,7 +5,7 @@
 # Monte Carlo con cross-fitting K=2 para la varianza.
 #
 # Uso:
-#   Rscript experiments/mc_cf.R <dgp 1|2|3> <normal|uniform> <n> <B> <outdir> [cores=1] [seed0=111001] [w_cap] [nuis=est|orac_gw] [c1=6] [c2=9] [n_knots_Q=10]
+#   Rscript experiments/mc_cf.R <dgp 1|2|3> <normal|uniform> <n> <B> <outdir> [cores=1] [seed0=111001] [w_cap] [nuis=est|orac_gw] [c1=6] [c2=9] [n_knots_Q=10] [k_Q=auto|0|1]
 #   Guarda se (cross-fitting) y se_insample (residuos en muestra) del MISMO ajuste: comparacion pareada.
 
 suppressMessages(library(thalnative))
@@ -24,6 +24,8 @@ c2v <- if (length(args) >= 11) as.numeric(args[11]) else 9
 stopifnot(is.finite(c1v), is.finite(c2v), c1v < c2v)
 nkq <- if (length(args) >= 12) as.integer(args[12]) else 10L   # nudos por variable del HAL del resultado (n_knots_Q)
 stopifnot(is.finite(nkq), nkq >= 2L)
+kq_arg <- if (length(args) >= 13) args[13] else "auto"   # orden de suavidad del HAL del resultado: auto (0, salvo DGP 3) | 0 | 1
+stopifnot(kq_arg %in% c("auto", "0", "1"))
 gf <- if (nuis_arg == "orac_gw") function(a, w) g0_dgp(a, w, trt) else NULL
 of <- if (nuis_arg == "orac_gw") function(a) omega_oracle(a, trt) else NULL
 stopifnot(dgp == 1 || dgp == 2 || dgp == 3, trt %in% c("normal", "uniform"))
@@ -31,7 +33,8 @@ wcap <- if (wcap_arg == "defecto") NULL else if (wcap_arg == "obs_max") "obs_max
 suffix <- paste0("_cf_cap", wcap_arg, if (seed0 != 111001L) paste0("_s", seed0) else "",
                  if (nuis_arg != "est") paste0("_", nuis_arg) else "",
                  if (c1v != 6 || c2v != 9) paste0("_c", c1v, "-", c2v) else "",
-                 if (nkq != 10L) paste0("_nkq", nkq) else "")
+                 if (nkq != 10L) paste0("_nkq", nkq) else "",
+                 if (kq_arg != "auto") paste0("_kq", kq_arg) else "")
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 
 g_w <- function(w, dgp) switch(dgp,
@@ -53,7 +56,7 @@ Eg <- switch(dgp, 5 * 0.5, 4 * (pnorm(1) - 0.5 + (1 - pnorm(1))), 0)
 truth_fun <- function(a) 3 * sin(1.5 * a) + 0.5 * a + Eg * (a - 4)
 grid <- seq(1, 9, length.out = 25)
 tr <- truth_fun(grid)
-k_Q <- if (dgp == 3) 1L else 0L
+k_Q <- if (kq_arg != "auto") as.integer(kq_arg) else if (dgp == 3) 1L else 0L
 
 one_rep <- function(b) {
   set.seed(seed0 + b)
