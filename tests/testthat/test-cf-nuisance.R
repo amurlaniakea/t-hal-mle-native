@@ -36,3 +36,13 @@ test_that("thal_fit: n_cf = 2 no cambia psi_hat y su IC en muestra coincide con 
   expect_true(all(is.finite(r2$ci$se)))
   expect_error(thal_fit(m$d$A, m$d$W, m$d$Y, m$grid, n_cf = 3L), "n_cf")
 })
+
+test_that("thal_fit: se^2 = var_R + var_S + 2 cov_RS (componentes del IC)", {
+  m <- mini()
+  for (ncf in c(1L, 2L)) {
+    r <- thal_fit(m$d$A, m$d$W, m$d$Y, m$grid, n_proj = 60L, w_cap = 3, seed = 1, n_cf = ncf)
+    p <- r$ic_var_parts
+    expect_equal(r$ci$se^2, p$var_R + p$var_S + 2 * p$cov_RS)
+  }
+})
+

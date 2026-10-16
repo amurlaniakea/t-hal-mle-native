@@ -60,3 +60,20 @@ test_that("select_lambda_by_size usa el exponente 1/(2k*+1) segun k", {
   expect_equal(select_lambda_by_size(df, 500, k = 1L), 3L)
   expect_equal(select_lambda_by_size(df, 500, k = 0L), 4L)
 })
+
+test_that("influence_parts: R + S coincide con influence_curve", {
+  set.seed(4)
+  n <- 50; m <- 10; s <- 3
+  I <- list(
+    wA = runif(n, 0.2, 2), Qstar_A = rnorm(n),
+    Phi_A = matrix(rnorm(n * s), n, s),
+    Phi_proj = matrix(rnorm(m * s), m, s),
+    Qstar_proj = matrix(rnorm(n * m), n, m),
+    Phi_grid = matrix(rnorm(4 * s), 4, s)
+  )
+  Y <- rnorm(n)
+  pp <- influence_parts(Y, I)
+  expect_equal(pp$R + pp$S, influence_curve(Y, I))
+  expect_equal(dim(pp$R), c(n, 4))
+})
+

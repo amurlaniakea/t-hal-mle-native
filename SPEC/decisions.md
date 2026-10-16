@@ -37,6 +37,9 @@ Actualizacion 2026-10-15: con cross-fitting K = 2 (n_cf = 2; residuos del Q inic
 Wald sube 0.02-0.10 de forma pareada (n = 500, tope 3, normal) y el SE medio / sd Monte Carlo pasa de 0.73-0.74 a
 0.88-1.00 en los DGP 1 y 2; sigue por debajo de 0.95 (0.85-0.90). Con g y omega oraculo casi no cambia. Ver README y
 experiments/results/cf_pareado_n500_B60_s222001.csv.
+Actualizacion 2026-10-15 (2): con tratamiento uniforme el cross-fitting tambien sube la cobertura (+0.01 a +0.07).
+Con la ventana por defecto del sieve (tamano ~21) la cobertura con un SE ideal queda en 0.90-0.93 por sesgo; con
+c1 = 9, c2 = 14 (tamano ~32) llega a ~0.95, pero la cobertura de Wald sigue en 0.86-0.89 en los DGP 1 y 2.
 
 **D-0005 -- Medida de integracion de A**
 Estado: tomada.

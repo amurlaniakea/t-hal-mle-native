@@ -35,6 +35,28 @@ influence_curve <- function(Y, ic_inputs, tol = 1e-8) {
   })
 }
 
+#' Componentes de la curva de influencia (Q-barra y Q_W) proyectadas a la rejilla
+#'
+#' Descompone `D_i(a) = R_i(a) + S_i(a)`: `R` es la componente de residuos (Q-barra) y `S` la de la variacion de W
+#' (Q_W), ambas ya multiplicadas por `phi(a)' Sigma^+`. Sirve para diagnosticar cual de las dos domina la varianza
+#' estimada en cada dosis.
+#'
+#' @inheritParams influence_curve
+#' @return Lista con las matrices `R` y `S` (n x length(grid)); `R + S` coincide con [influence_curve()].
+#' @export
+influence_parts <- function(Y, ic_inputs, tol = 1e-8) {
+  if (is.null(ic_inputs)) stop("ic_inputs es NULL: el targeting no selecciono funciones base.")
+  with(ic_inputs, {
+    n <- length(Y)
+    m <- nrow(Phi_proj)
+    Sigma_pinv <- pinv_sym(crossprod(Phi_proj) / m, tol = tol)
+    psi_pl <- colMeans(Qstar_proj)
+    R <- (wA * (Y - Qstar_A)) * Phi_A
+    S <- (Qstar_proj - matrix(psi_pl, n, m, byrow = TRUE)) %*% Phi_proj / m
+    list(R = (R %*% Sigma_pinv) %*% t(Phi_grid), S = (S %*% Sigma_pinv) %*% t(Phi_grid))
+  })
+}
+
 #' Varianza de psi_hat(a): P[D(a)^2] / n
 #'
 #' @param ic_matrix Matriz n x G de la curva de influencia, de [influence_curve()].
