@@ -43,3 +43,15 @@
   `c1 = 9, c2 = 14` (`mc_cf.R <dgp> uniform 500 60 ~/mc_out_sieve 6 555001 3 est 9 14`).
 - El RMSE de los `*_rmse_*.csv` es la media de los RMSE por dosis (como `piloto_n500_B50.csv`).
 
+# Resolucion del HAL de Q (n_knots_Q y k_Q)
+
+- `nkq20_*_dgp1_uniforme_n500_B30_s888001.csv`: DGP 1 uniforme, ventana 9-14, `n_knots_Q = 20`
+  (`mc_cf.R 1 uniform 500 30 ~/mc_out_nkq 6 888001 3 est 9 14 20`).
+- `kq1_*_dgp1_uniforme_n500_B60_s999001.csv`: DGP 1 uniforme, ventana 9-14, `k_Q = 1` con 10 nudos
+  (`mc_cf.R 1 uniform 500 60 ~/mc_out_kq1 6 999001 3 est 9 14 10 1`).
+- `nkq20_*_dgp123_n500_B30_s123001.csv`: DGP 3 normal, DGP 2 uniforme (ventana 9-14) y DGP 1 normal, `n_knots_Q = 20`
+  (`mc_cf.R <dgp> <trt> 500 30 ~/mc_out_nkq2 6 123001 3 est <c1> <c2> 20`).
+- `*_cf_*.csv` es la salida de `mc_cf_summary.R` y `*_rmse_*.csv` la de `mc_summary.R`.
+- Diagnosticos: `experiments/diag_pendiente.R` (relacion de la varianza con la pendiente^2),
+  `diag_modos.R`, `diag_seleccion.R`, `diag_componentes.R`, `diag_se_ruido.R`.
+
