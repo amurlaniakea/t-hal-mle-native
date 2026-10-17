@@ -1,0 +1,243 @@
+################ mc_out_cfp
+
+dgp1_normal_n500_cf_cap3_s222001_orac_gw (B = 60)
+            [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]
+dosis       1.00  2.33  3.67  5.00  6.33  7.67  9.00
+RMSE_HAL    1.39  0.50  1.30  0.58  0.42  0.89  2.45
+RMSE_THAL   1.26  0.44  0.47  0.39  0.32  0.90  2.35
+sesgo_HAL   0.82  0.21  0.64 -0.20  0.24  0.24 -1.93
+sesgo_THAL  0.51 -0.06 -0.03 -0.07  0.07 -0.22  0.39
+sd_HAL      1.13  0.46  1.14  0.54  0.35  0.87  1.52
+sd_THAL     1.16  0.44  0.48  0.39  0.32  0.88  2.33
+dMSE       -0.33 -0.06 -1.47 -0.18 -0.07  0.02 -0.48
+z_dMSE     -2.47 -1.79 -6.93 -3.18 -2.93  0.11 -0.32
+RMSE medio por dosis, todas: HAL 1.095, T-HAL 0.773 | sin las 3 dosis de cada extremo: HAL 0.884, T-HAL 0.522
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) 6 %, centrales 71 %, extremo superior (3) 23 %
+
+dgp1_normal_n500_cf_cap3_s222001 (B = 60)
+            [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]
+dosis       1.00  2.33  3.67  5.00  6.33  7.67  9.00
+RMSE_HAL    1.39  0.50  1.30  0.58  0.42  0.89  2.45
+RMSE_THAL   1.35  0.46  0.53  0.34  0.37  0.91  2.19
+sesgo_HAL   0.82  0.21  0.64 -0.20  0.24  0.24 -1.93
+sesgo_THAL  0.71 -0.01  0.01 -0.01  0.10 -0.28  0.76
+sd_HAL      1.13  0.46  1.14  0.54  0.35  0.87  1.52
+sd_THAL     1.16  0.47  0.53  0.34  0.36  0.87  2.08
+dMSE       -0.10 -0.04 -1.41 -0.22 -0.04  0.03 -1.18
+z_dMSE     -1.01 -1.07 -6.65 -3.93 -1.33  0.14 -0.83
+RMSE medio por dosis, todas: HAL 1.095, T-HAL 0.784 | sin las 3 dosis de cada extremo: HAL 0.884, T-HAL 0.533
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) 4 %, centrales 71 %, extremo superior (3) 25 %
+
+dgp2_normal_n500_cf_cap3_s222001_orac_gw (B = 60)
+           [,1]  [,2]  [,3]  [,4]  [,5] [,6]  [,7]
+dosis      1.00  2.33  3.67  5.00  6.33 7.67  9.00
+RMSE_HAL   1.06  0.72  1.23  0.54  0.53 1.00  2.34
+RMSE_THAL  1.30  0.69  0.45  0.37  0.42 1.07  1.93
+sesgo_HAL  0.01  0.44  0.64 -0.16  0.25 0.55 -1.90
+sesgo_THAL 0.31  0.41  0.16 -0.04  0.08 0.38  0.24
+sd_HAL     1.07  0.57  1.06  0.52  0.46 0.84  1.38
+sd_THAL    1.28  0.56  0.43  0.37  0.42 1.01  1.93
+dMSE       0.57 -0.04 -1.32 -0.15 -0.10 0.15 -1.76
+z_dMSE     3.31 -0.88 -7.17 -3.09 -2.25 0.67 -1.81
+RMSE medio por dosis, todas: HAL 1.081, T-HAL 0.780 | sin las 3 dosis de cada extremo: HAL 0.907, T-HAL 0.576
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) 0 %, centrales 69 %, extremo superior (3) 31 %
+
+dgp2_normal_n500_cf_cap3_s222001 (B = 60)
+           [,1]  [,2]  [,3]  [,4]  [,5] [,6]  [,7]
+dosis      1.00  2.33  3.67  5.00  6.33 7.67  9.00
+RMSE_HAL   1.06  0.72  1.23  0.54  0.53 1.00  2.34
+RMSE_THAL  1.27  0.68  0.41  0.37  0.44 1.11  2.08
+sesgo_HAL  0.01  0.44  0.64 -0.16  0.25 0.55 -1.90
+sesgo_THAL 0.37  0.39  0.12 -0.02  0.09 0.43  0.33
+sd_HAL     1.07  0.57  1.06  0.52  0.46 0.84  1.38
+sd_THAL    1.23  0.56  0.40  0.37  0.43 1.03  2.07
+dMSE       0.49 -0.06 -1.35 -0.15 -0.08 0.23 -1.16
+z_dMSE     3.14 -1.40 -7.19 -2.80 -1.83 1.32 -0.99
+RMSE medio por dosis, todas: HAL 1.081, T-HAL 0.775 | sin las 3 dosis de cada extremo: HAL 0.907, T-HAL 0.569
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) 1 %, centrales 70 %, extremo superior (3) 29 %
+
+dgp3_normal_n500_cf_cap3_s222001_orac_gw (B = 60)
+            [,1] [,2]  [,3]  [,4] [,5]  [,6]  [,7]
+dosis       1.00 2.33  3.67  5.00 6.33  7.67  9.00
+RMSE_HAL    1.51 0.50  0.66  0.68 0.57  1.12  2.08
+RMSE_THAL   1.27 0.68  0.32  0.39 0.69  1.73  3.76
+sesgo_HAL  -1.21 0.20  0.61 -0.57 0.11  0.62 -0.95
+sesgo_THAL -0.16 0.07  0.21 -0.14 0.00 -0.07  0.63
+sd_HAL      0.90 0.47  0.26  0.38 0.56  0.94  1.87
+sd_THAL     1.27 0.68  0.25  0.36 0.69  1.74  3.74
+dMSE       -0.65 0.21 -0.33 -0.32 0.15  1.74  9.81
+z_dMSE     -1.89 3.34 -7.11 -5.15 1.96  3.36  3.38
+RMSE medio por dosis, todas: HAL 0.966, T-HAL 1.121 | sin las 3 dosis de cada extremo: HAL 0.754, T-HAL 0.736
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) -10 %, centrales 10 %, extremo superior (3) 100 %
+
+dgp3_normal_n500_cf_cap3_s222001 (B = 60)
+            [,1] [,2]  [,3]  [,4]  [,5]  [,6]  [,7]
+dosis       1.00 2.33  3.67  5.00  6.33  7.67  9.00
+RMSE_HAL    1.51 0.50  0.66  0.68  0.57  1.12  2.08
+RMSE_THAL   1.34 0.68  0.28  0.35  0.77  1.75  3.71
+sesgo_HAL  -1.21 0.20  0.61 -0.57  0.11  0.62 -0.95
+sesgo_THAL -0.23 0.00  0.18 -0.12 -0.05 -0.19  0.48
+sd_HAL      0.90 0.47  0.26  0.38  0.56  0.94  1.87
+sd_THAL     1.33 0.69  0.22  0.33  0.78  1.75  3.71
+dMSE       -0.47 0.21 -0.36 -0.34  0.28  1.79  9.40
+z_dMSE     -1.43 2.99 -7.67 -5.29  2.07  3.44  3.09
+RMSE medio por dosis, todas: HAL 0.966, T-HAL 1.109 | sin las 3 dosis de cada extremo: HAL 0.754, T-HAL 0.738
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) -10 %, centrales 12 %, extremo superior (3) 97 %
+################ mc_out_nkq2
+
+dgp1_normal_n500_cf_cap3_s123001_nkq20 (B = 30)
+            [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]
+dosis       1.00  2.33  3.67  5.00  6.33  7.67  9.00
+RMSE_HAL    1.45  0.45  0.72  0.57  0.50  0.84  1.70
+RMSE_THAL   1.41  0.37  0.31  0.25  0.37  0.93  1.41
+sesgo_HAL   0.69  0.25 -0.22 -0.39  0.09  0.43  0.26
+sesgo_THAL  0.63  0.20  0.06 -0.07  0.02 -0.08  0.12
+sd_HAL      1.29  0.38  0.70  0.41  0.50  0.74  1.70
+sd_THAL     1.28  0.32  0.31  0.25  0.38  0.94  1.43
+dMSE       -0.11 -0.07 -0.43 -0.26 -0.11  0.15 -0.88
+z_dMSE     -0.56 -1.10 -5.01 -3.89 -2.74  0.43 -0.94
+RMSE medio por dosis, todas: HAL 0.836, T-HAL 0.602 | sin las 3 dosis de cada extremo: HAL 0.642, T-HAL 0.435
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) 0 %, centrales 42 %, extremo superior (3) 58 %
+
+dgp2_uniform_n500_cf_cap3_s123001_c9-14_nkq20 (B = 30)
+            [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]
+dosis       1.00  2.33  3.67  5.00  6.33  7.67  9.00
+RMSE_HAL    0.74  0.39  0.75  0.67  0.44  1.03  1.35
+RMSE_THAL   0.45  0.29  0.41  0.35  0.42  0.62  0.97
+sesgo_HAL  -0.42  0.11  0.20 -0.17  0.08  0.32 -0.32
+sesgo_THAL -0.14  0.03  0.00 -0.01  0.10  0.07 -0.17
+sd_HAL      0.62  0.38  0.73  0.66  0.44  1.00  1.33
+sd_THAL     0.43  0.29  0.42  0.35  0.41  0.63  0.97
+dMSE       -0.35 -0.07 -0.39 -0.33 -0.02 -0.69 -0.88
+z_dMSE     -3.63 -1.64 -2.88 -3.37 -0.53 -3.31 -2.37
+RMSE medio por dosis, todas: HAL 0.700, T-HAL 0.460 | sin las 3 dosis de cada extremo: HAL 0.639, T-HAL 0.411
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) 6 %, centrales 65 %, extremo superior (3) 29 %
+
+dgp3_normal_n500_cf_cap3_s123001_nkq20 (B = 30)
+            [,1] [,2]  [,3]  [,4] [,5] [,6]  [,7]
+dosis       1.00 2.33  3.67  5.00 6.33 7.67  9.00
+RMSE_HAL    1.49 0.41  0.83  0.58 0.53 1.03  2.76
+RMSE_THAL   1.53 0.51  0.29  0.33 0.59 1.23  4.90
+sesgo_HAL  -1.05 0.08  0.80 -0.48 0.15 0.66 -1.10
+sesgo_THAL  0.04 0.10  0.16 -0.02 0.01 0.06 -0.63
+sd_HAL      1.08 0.41  0.23  0.33 0.51 0.80  2.57
+sd_THAL     1.55 0.51  0.24  0.34 0.60 1.25  4.94
+dMSE        0.12 0.09 -0.61 -0.22 0.07 0.46 16.37
+z_dMSE      0.17 1.63 -9.35 -3.66 0.95 1.24  2.33
+RMSE medio por dosis, todas: HAL 0.985, T-HAL 1.041 | sin las 3 dosis de cada extremo: HAL 0.725, T-HAL 0.637
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) -11 %, centrales -3 %, extremo superior (3) 114 %
+################ mc_out_d3caps
+
+dgp3_normal_n500_cf_cap1_s444001 (B = 60)
+            [,1]  [,2]  [,3]  [,4]  [,5]  [,6]  [,7]
+dosis       1.00  2.33  3.67  5.00  6.33  7.67  9.00
+RMSE_HAL    1.88  0.56  0.76  0.62  0.40  1.18  2.46
+RMSE_THAL   1.42  0.53  0.31  0.36  0.60  1.70  3.07
+sesgo_HAL  -1.41  0.18  0.70 -0.51  0.09  0.66 -0.94
+sesgo_THAL -0.41  0.05  0.20  0.01 -0.01 -0.20  0.07
+sd_HAL      1.25  0.54  0.30  0.35  0.40  0.99  2.30
+sd_THAL     1.37  0.53  0.24  0.36  0.61  1.70  3.09
+dMSE       -1.54 -0.04 -0.48 -0.25  0.20  1.48  3.33
+z_dMSE     -4.44 -1.22 -9.30 -4.62  3.08  3.20  2.03
+RMSE medio por dosis, todas: HAL 1.034, T-HAL 0.938 | sin las 3 dosis de cada extremo: HAL 0.756, T-HAL 0.651
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) -1972 %, centrales -158 %, extremo superior (3) 2229 %
+
+dgp3_normal_n500_cf_cap1.5_s444001 (B = 60)
+            [,1]  [,2]   [,3]  [,4]  [,5]  [,6]  [,7]
+dosis       1.00  2.33   3.67  5.00  6.33  7.67  9.00
+RMSE_HAL    1.88  0.56   0.76  0.62  0.40  1.18  2.46
+RMSE_THAL   1.47  0.55   0.29  0.37  0.58  1.83  3.23
+sesgo_HAL  -1.41  0.18   0.70 -0.51  0.09  0.66 -0.94
+sesgo_THAL -0.32  0.01   0.21  0.02 -0.01 -0.34  0.07
+sd_HAL      1.25  0.54   0.30  0.35  0.40  0.99  2.30
+sd_THAL     1.45  0.56   0.21  0.37  0.59  1.81  3.25
+dMSE       -1.39 -0.01  -0.49 -0.25  0.18  1.96  4.34
+z_dMSE     -3.49 -0.24 -10.00 -4.54  3.18  3.36  2.13
+RMSE medio por dosis, todas: HAL 1.034, T-HAL 0.974 | sin las 3 dosis de cada extremo: HAL 0.756, T-HAL 0.672
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) -128 %, centrales 19 %, extremo superior (3) 209 %
+
+dgp3_normal_n500_cf_cap2_s444001 (B = 60)
+            [,1]  [,2]   [,3]  [,4]  [,5]  [,6]  [,7]
+dosis       1.00  2.33   3.67  5.00  6.33  7.67  9.00
+RMSE_HAL    1.88  0.56   0.76  0.62  0.40  1.18  2.46
+RMSE_THAL   1.55  0.61   0.29  0.36  0.61  1.88  3.45
+sesgo_HAL  -1.41  0.18   0.70 -0.51  0.09  0.66 -0.94
+sesgo_THAL -0.23 -0.04   0.19  0.00 -0.01 -0.42  0.08
+sd_HAL      1.25  0.54   0.30  0.35  0.40  0.99  2.30
+sd_THAL     1.54  0.61   0.22  0.36  0.62  1.85  3.48
+dMSE       -1.15  0.05  -0.49 -0.25  0.21  2.16  5.85
+z_dMSE     -2.49  0.98 -10.12 -4.65  3.40  3.13  2.40
+RMSE medio por dosis, todas: HAL 1.034, T-HAL 1.009 | sin las 3 dosis de cada extremo: HAL 0.756, T-HAL 0.690
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) -62 %, centrales 21 %, extremo superior (3) 141 %
+################ mc_out_d3size
+
+dgp3_normal_n500_cf_cap3_s515001_c2-3.5 (B = 60)
+            [,1] [,2] [,3]  [,4] [,5] [,6]  [,7]
+dosis       1.00 2.33 3.67  5.00 6.33 7.67  9.00
+RMSE_HAL    1.55 0.56 0.76  0.69 0.53 1.48  2.55
+RMSE_THAL   1.98 0.79 1.24  1.26 0.80 1.74  3.30
+sesgo_HAL  -1.12 0.16 0.68 -0.58 0.10 0.87 -1.31
+sesgo_THAL -1.36 0.22 1.07 -1.02 0.20 0.93 -1.43
+sd_HAL      1.07 0.54 0.34  0.36 0.52 1.21  2.20
+sd_THAL     1.46 0.77 0.62  0.75 0.78 1.48  3.00
+dMSE        1.55 0.31 0.95  1.11 0.36 0.84  4.40
+z_dMSE      3.56 3.23 3.55  4.15 2.60 2.03  4.02
+RMSE medio por dosis, todas: HAL 1.059, T-HAL 1.439 | sin las 3 dosis de cada extremo: HAL 0.818, T-HAL 1.173
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) 12 %, centrales 53 %, extremo superior (3) 35 %
+
+dgp3_normal_n500_cf_cap3_s515001_c3-5 (B = 60)
+            [,1] [,2]  [,3]  [,4] [,5]  [,6]  [,7]
+dosis       1.00 2.33  3.67  5.00 6.33  7.67  9.00
+RMSE_HAL    1.55 0.56  0.76  0.69 0.53  1.48  2.55
+RMSE_THAL   1.58 0.68  0.74  0.67 0.73  1.45  3.24
+sesgo_HAL  -1.12 0.16  0.68 -0.58 0.10  0.87 -1.31
+sesgo_THAL -0.69 0.08  0.67 -0.43 0.07  0.46 -0.97
+sd_HAL      1.07 0.54  0.34  0.36 0.52  1.21  2.20
+sd_THAL     1.43 0.68  0.31  0.52 0.74  1.39  3.12
+dMSE        0.10 0.15 -0.02 -0.02 0.26 -0.07  4.03
+z_dMSE      0.29 4.36 -0.41 -0.24 1.27 -0.30  3.94
+RMSE medio por dosis, todas: HAL 1.059, T-HAL 1.139 | sin las 3 dosis de cada extremo: HAL 0.818, T-HAL 0.836
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) -1 %, centrales 6 %, extremo superior (3) 95 %
+
+dgp3_normal_n500_cf_cap3_s515001 (B = 60)
+            [,1] [,2]  [,3]  [,4]  [,5] [,6]  [,7]
+dosis       1.00 2.33  3.67  5.00  6.33 7.67  9.00
+RMSE_HAL    1.55 0.56  0.76  0.69  0.53 1.48  2.55
+RMSE_THAL   1.58 0.72  0.29  0.36  0.79 2.04  4.98
+sesgo_HAL  -1.12 0.16  0.68 -0.58  0.10 0.87 -1.31
+sesgo_THAL -0.02 0.04  0.19 -0.11 -0.10 0.05 -0.42
+sd_HAL      1.07 0.54  0.34  0.36  0.52 1.21  2.20
+sd_THAL     1.60 0.73  0.22  0.35  0.79 2.05  5.00
+dMSE        0.12 0.21 -0.49 -0.34  0.34 1.97 18.32
+z_dMSE      0.20 2.63 -8.22 -6.16  3.21 2.36  2.90
+RMSE medio por dosis, todas: HAL 1.059, T-HAL 1.226 | sin las 3 dosis de cada extremo: HAL 0.818, T-HAL 0.785
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) -5 %, centrales 9 %, extremo superior (3) 96 %
+################ mc_out_sdA
+
+dgp3_normal_n500_cf_cap3_s515001_sd3 (B = 60)
+            [,1] [,2]  [,3]  [,4]  [,5] [,6]  [,7]
+dosis       1.00 2.33  3.67  5.00  6.33 7.67  9.00
+RMSE_HAL    1.47 0.59  0.82  0.87  0.51 1.34  1.83
+RMSE_THAL   1.20 0.61  0.37  0.47  0.66 1.38  2.56
+sesgo_HAL  -1.07 0.34  0.74 -0.74  0.05 0.69 -1.03
+sesgo_THAL -0.18 0.04  0.28 -0.04 -0.07 0.14  0.13
+sd_HAL      1.01 0.48  0.35  0.45  0.51 1.15  1.52
+sd_THAL     1.20 0.61  0.24  0.47  0.66 1.39  2.58
+dMSE       -0.71 0.02 -0.54 -0.53  0.18 0.13  3.21
+z_dMSE     -2.52 0.43 -9.27 -5.26  2.31 0.40  2.26
+RMSE medio por dosis, todas: HAL 0.996, T-HAL 0.919 | sin las 3 dosis de cada extremo: HAL 0.842, T-HAL 0.664
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) -87 %, centrales -161 %, extremo superior (3) 348 %
+
+dgp3_normal_n500_cf_cap3_s515001_sd4 (B = 60)
+            [,1]  [,2]   [,3]  [,4]  [,5]  [,6]  [,7]
+dosis       1.00  2.33   3.67  5.00  6.33  7.67  9.00
+RMSE_HAL    1.41  0.56   0.96  1.00  0.51  1.34  1.68
+RMSE_THAL   1.17  0.47   0.42  0.43  0.65  1.28  2.09
+sesgo_HAL  -1.00  0.32   0.90 -0.91  0.08  0.70 -0.95
+sesgo_THAL -0.20  0.04   0.35 -0.12 -0.01 -0.05 -0.15
+sd_HAL      1.00  0.46   0.33  0.42  0.50  1.15  1.39
+sd_THAL     1.16  0.47   0.23  0.41  0.65  1.29  2.10
+dMSE       -0.63 -0.09  -0.75 -0.82  0.16 -0.16  1.53
+z_dMSE     -2.96 -2.24 -10.11 -7.99  1.47 -0.61  2.16
+RMSE medio por dosis, todas: HAL 1.002, T-HAL 0.817 | sin las 3 dosis de cada extremo: HAL 0.872, T-HAL 0.618
+reparto del exceso de MSE de T-HAL sobre HAL: dosis del extremo inferior (3) 43 %, centrales 126 %, extremo superior (3) -68 %

@@ -55,3 +55,14 @@
 - Diagnosticos: `experiments/diag_pendiente.R` (relacion de la varianza con la pendiente^2),
   `diag_modos.R`, `diag_seleccion.R`, `diag_componentes.R`, `diag_se_ruido.R`.
 
+# DGP 3 con tratamiento normal: por dosis, tamano del targeting y solapamiento
+
+- `diag_rmse_dosis_dgp3.txt`: salida de `experiments/diag_rmse_dosis.R` (T-HAL frente a HAL dosis a dosis) sobre las
+  carpetas `mc_out_cfp`, `mc_out_nkq2`, `mc_out_d3caps`, `mc_out_d3size` y `mc_out_sdA`.
+- `dgp3_tamano_targeting_*_n500_B60_s515001.csv`: DGP 3 normal, tope 3, ventanas `c1 c2` = 2 3.5, 3 5 y 6 9
+  (`mc_cf.R 3 normal 500 60 ~/mc_out_d3size 6 515001 3 est <c1> <c2>`).
+- `dgp3_solapamiento_*_n500_B60_s515001.csv`: DGP 3 normal, tope 3, `sdA` = 3 y 4
+  (`mc_cf.R 3 normal 500 60 ~/mc_out_sdA 6 515001 3 est 6 9 10 auto <sdA>`); la referencia sdA = 2 es la fila sin sufijo
+  de `dgp3_tamano_targeting_*`.
+- `*_cf_*.csv` es la salida de `mc_cf_summary.R` y `*_rmse_*.csv` la de `mc_summary.R`.
+

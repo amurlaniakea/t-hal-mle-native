@@ -178,3 +178,14 @@ n_knots_Q = 20 (coste ~3 veces mayor) o con k_Q = 1 (sin coste, pero el SE sale 
 confirmar con otros n y mas replicas, decidir el default (p. ej. escalar n_knots_Q con n o acelerar el LASSO) y
 comprobar el HAL del paper. Los DGP 3 con tratamiento normal siguen sin reproducir la ventaja de T-HAL (ver README).
 
+---
+
+## D-0013 -- Solapamiento (A | W) y DGP 3 con tratamiento normal
+Estado: abierta.
+Con sd(A | W) = 2 T-HAL pierde frente al HAL en el DGP 3 normal (+0.25 a +0.40 de RMSE por replica) y casi todo el
+exceso viene de las dosis altas (a >= 7.67), donde P(A > 9 | W < -0.5) ~ 0.003. Ni el tope de pesos (2, 1.5, 1) ni el
+tamano del modelo de targeting ni los oraculos de g y omega lo arreglan; ensanchar A | W (sd = 3, 4) lo invierte
+(+0.02, -0.11). Pendiente: comprobar con el paper la sd o varianza de A | W (D-0011), el truncamiento, la rejilla de
+evaluacion y la agregacion del RMSE; decidir si la evaluacion se restringe al soporte (declarado de antemano) y como
+se reporta la cobertura en las dosis sin solapamiento.
+

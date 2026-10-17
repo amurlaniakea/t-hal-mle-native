@@ -108,10 +108,57 @@ Lectura (n = 500; B = 30-60; semillas distintas entre configuraciones, comparaci
   tratamiento normal en el DGP 1 corrige un SE corto (0.74 -> 1.00). No es una mejora universal.
 - Sigue sin reproducirse que T-HAL gane en el DGP 3 con tratamiento normal (+0.255, 10 de 30), y en ese escenario la
   varianza real de `psi_hat` en a = 9 (24.4) es ocho veces el SE^2 medio (2.95): las dosis extremas con pesos grandes
-  estan sin resolver.
+  estan sin resolver. Ver "DGP 3 con tratamiento normal: donde pierde T-HAL y por que" (falta de solapamiento).
 - El valor por defecto sigue siendo `n_knots_Q = 10`: pasar a 20 cuesta ~3 veces mas de tiempo y falta confirmarlo con
   otros n y mas replicas. Si el HAL del paper usa muchos mas nudos (p. ej. los puntos observados), esta es una
   diferencia relevante de esta implementacion; no esta verificado contra el paper.
+
+## DGP 3 con tratamiento normal: donde pierde T-HAL y por que
+
+**Donde.** Dosis a dosis (n = 500, B = 60, tope 3, `n_knots_Q = 10`, g y omega estimadas; `z` = diferencia de MSE entre
+T-HAL y HAL dividida por su error estandar, positivo = T-HAL peor; `experiments/diag_rmse_dosis.R`):
+
+| dosis | 1 | 2.33 | 3.67 | 5 | 6.33 | 7.67 | 9 |
+|---|---|---|---|---|---|---|---|
+| RMSE HAL | 1.51 | 0.50 | 0.66 | 0.68 | 0.57 | 1.12 | 2.08 |
+| RMSE T-HAL | 1.34 | 0.68 | 0.28 | 0.35 | 0.77 | 1.75 | 3.71 |
+| z | -1.4 | +3.0 | -7.7 | -5.3 | +2.1 | +3.4 | +3.1 |
+
+T-HAL gana con claridad en el centro y en el extremo inferior (el HAL tiene alli un sesgo de -1.2 a -1.4) y pierde en las
+dosis altas: las tres mas altas aportan ~97 % del exceso de MSE. En a = 9 T-HAL reduce el sesgo (-0.95 -> +0.48) pero
+duplica la desviacion tipica (1.87 -> 3.71). Con g y omega oraculo el resultado por dosis es casi identico.
+
+**Perillas que no lo arreglan** (comparaciones sobre los mismos datos dentro de cada fila):
+
+| palanca | valores | sd T-HAL en a = 9 (HAL) | otro efecto |
+|---|---|---|---|
+| tope de pesos (semilla 444001) | 2 / 1.5 / 1 | 3.48 / 3.25 / 3.09 (2.30) | RMSE medio por dosis 1.009 / 0.974 / 0.938 (HAL 1.034); cob. Wald CF 0.903 / 0.889 / 0.867 |
+| tamano del targeting (semilla 515001) | 7 / 11 / 21 funciones | 3.00 / 3.12 / 5.00 (2.20) | RMSE en a = 5: 1.26 / 0.67 / 0.36 (HAL 0.69); cob. Wald en muestra 0.51 / 0.68 / 0.86 |
+
+Bajar el tope apenas reduce la varianza del extremo; reducir el modelo de targeting la reduce pero devuelve el sesgo en el
+centro y hunde la cobertura.
+
+**Por que: falta de solapamiento.** Con A | W ~ N(5 + 1.5 W, sd^2) truncada a [0, 10], en a = 9 y para w < -0.5 la
+probabilidad condicional es P(A > 9 | W) ~ 0.003 con sd = 2; el 37 % de la poblacion tiene alli un peso verdadero mayor
+que 3. Si se ensancha A | W (semilla 515001, tope 3, B = 60, mismos W y ruido):
+
+| sd de A \\| W | P(A > 9 \\| W < -0.5) | dif. RMSE por replica frente a HAL (EE) | T-HAL gana en | RMSE medio por dosis HAL / T-HAL | sd en a = 9 HAL / T-HAL | cob. Wald en muestra -> CF |
+|---|---|---|---|---|---|---|
+| 2 | 0.0027 | +0.395 (0.086) | 12 de 60 | 1.06 / 1.23 | 2.20 / 5.00 | 0.861 -> 0.883 |
+| 3 | 0.0201 | +0.019 (0.046) | 33 de 60 | 1.00 / 0.92 | 1.52 / 2.58 | 0.916 -> 0.939 |
+| 4 | 0.0410 | -0.114 (0.037) | 38 de 60 | 1.00 / 0.82 | 1.39 / 2.10 | 0.922 -> 0.941 |
+
+Al mejorar el solapamiento, T-HAL pasa de perder a ganar, el cociente de desviaciones tipicas en a = 9 baja de 2.3 a 1.5 y
+la cobertura de Wald con cross-fitting llega a ~0.94. Con tratamiento uniforme (solapamiento total) T-HAL gana en todos los
+DGP. Lectura (un DGP, n = 500, B = 60):
+
+- La perdida del DGP 3 normal con sd = 2 se explica en gran parte por la falta de solapamiento en las dosis altas, no por
+  los topes ni por el tamano del targeting ni por estimar g y omega.
+- Incluso con sd = 4, T-HAL sigue algo peor que el HAL en a = 9 (RMSE 2.09 frente a 1.68, z = +2.2).
+- El paper dice que sus DGP no sufren pesos grandes; con sd = 2 los pesos verdaderos llegan a 29 en a = 9 (w = -1.5). Falta
+  comprobar contra el paper la sd (o varianza) de A | W, el truncamiento, la rejilla de evaluacion y como agrega el RMSE.
+- La comparacion global depende de la metrica: con tope <= 2 (semilla 444001) el RMSE medio por dosis da a T-HAL por
+  debajo del HAL, mientras que la diferencia por replica (RMS entre dosis) lo da por encima.
 
 ## Evidencia: Monte Carlo piloto con los DGP del paper
 
