@@ -40,6 +40,9 @@ experiments/results/cf_pareado_n500_B60_s222001.csv.
 Actualizacion 2026-10-15 (2): con tratamiento uniforme el cross-fitting tambien sube la cobertura (+0.01 a +0.07).
 Con la ventana por defecto del sieve (tamano ~21) la cobertura con un SE ideal queda en 0.90-0.93 por sesgo; con
 c1 = 9, c2 = 14 (tamano ~32) llega a ~0.95, pero la cobertura de Wald sigue en 0.86-0.89 en los DGP 1 y 2.
+Actualizacion 2026-10-17: gran parte del defecto del SE en los DGP 1 y 2 venia de la resolucion del HAL de Q
+(k_Q = 0, n_knots_Q = 10): picos de varianza real cerca de los nudos que el IC no recoge. Con n_knots_Q = 20 o
+k_Q = 1 desaparecen y la cobertura de Wald con el SE en muestra llega a 0.93-0.97 (uniforme). Ver D-0012.
 
 **D-0005 -- Medida de integracion de A**
 Estado: tomada.
@@ -63,6 +66,10 @@ Estado: tomada (corregida).
 w_cap es un parametro de primera clase.
 Default: NULL (usa sqrt(n)*log(n/5) del paper).
 Opcion "obs_max" disponible explicitamente para casos con colas pesadas.
+Evidencia Monte Carlo (n = 500, tratamiento normal): con el tope del paper (~103) T-HAL tiene RMSE 4-7 frente a 1.2-1.3
+del plug-in HAL en los DGP 1 y 2; con tope 3 gana (-0.34 a -0.39 de RMSE por dosis) y en el DGP 3 no supera al HAL
+(+0.25 a +0.35; ~0 con tope 1). Bajar el tope mejora el RMSE pero reduce la cobertura de Wald. El default sigue
+siendo el del paper; ver README.
 
 **D-0009 -- Orden de suavidad**
 Estado: tomada.
@@ -97,10 +104,10 @@ Es una funcion general de (a, w) evaluable fuera de muestra (resuelve Q-14).
 **Q-05 (RESUELTA) -- Sigma inversa**
 Sin Sigma^{-1} por defecto. La covariable inteligente es omega/g * phi(A).
 
-**Q-06 (CORREGIDA) -- Cross-fitting**
-Dato anterior erróneo corregido: en logs de thalmle, cross-fitting K=2 con tratamiento
-normal da RMSE ~3.69 frente a ~0.99 sin CF. El repo nativo usa ajuste en muestra
-completa por defecto, pero la infraestructura permite explorar CF en el futuro.
+**Q-06 (RESUELTA) -- Cross-fitting**
+El dato de thalmle (CF K=2 con tratamiento normal: RMSE ~3.69 frente a ~0.99 sin CF) corresponde a otra variante.
+Aqui `n_cf = 2` es cross-fitting SOLO de la varianza: no cambia psi_hat y usa residuos del Q inicial fuera de fold.
+Implementado y medido (ver D-0004 y README): su efecto sobre la cobertura depende de la resolucion del HAL de Q.
 
 **Q-07 (RESUELTA) -- Termino Q_W del gradiente**
 Implementado en influence_curve(): promedio sobre los puntos de proyeccion (la medida de A del paso 7)
@@ -160,3 +167,14 @@ A ~ U(0,10) o A|W ~ N(5+1.5W, 2^2) truncada a [0,10]; `omega_oracle` es la margi
 Antes el paquete usaba g(w) propias (0.5w + 0.25w^2); la cobertura ~0.73 citada en D-0004 se midio con ese DGP anterior.
 Con el DGP exacto y tratamiento normal, T-HAL se dispara en las dosis extremas incluso con g y omega oraculo
 (ver experiments/mc_wcap.R); el test de test-core.R solo exige un resultado finito y acotado.
+
+---
+
+## D-0012 -- Resolucion del HAL de Q (n_knots_Q, k_Q)
+Estado: abierta (valor por defecto sin cambiar: n_knots_Q = 10).
+Con k_Q = 0 y 10 nudos por variable (cuantiles de la muestra) la varianza real de psi_hat tiene picos en las dosis
+cercanas a los nudos, proporcionales a la pendiente al cuadrado de la verdad, que el IC no recoge. Se eliminan con
+n_knots_Q = 20 (coste ~3 veces mayor) o con k_Q = 1 (sin coste, pero el SE sale ~1.5 veces sobrestimado). Pendiente:
+confirmar con otros n y mas replicas, decidir el default (p. ej. escalar n_knots_Q con n o acelerar el LASSO) y
+comprobar el HAL del paper. Los DGP 3 con tratamiento normal siguen sin reproducir la ventaja de T-HAL (ver README).
+

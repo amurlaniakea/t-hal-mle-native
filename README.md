@@ -2,7 +2,7 @@
 
 Implementacion nativa en R base del Targeted Highly Adaptive Lasso Minimum Loss Estimation (T-HAL-MLE) para curvas dosis-respuesta continuas.
 
-Estado: v0.0.1 EXPERIMENTAL. 91 expectativas (31 bloques de test) pasando, 20 funciones exportadas, 100% R base. Prototipo de investigacion: la inferencia aun no esta validada y varias piezas difieren del paper (ver SPEC/decisions.md).
+Estado: v0.0.1 EXPERIMENTAL. 95 expectativas (33 bloques de test) pasando, 20 funciones exportadas, 100% R base. Prototipo de investigacion: la inferencia aun no esta validada y varias piezas difieren del paper (ver SPEC/decisions.md).
 
 ## Caracteristicas
 
@@ -10,7 +10,7 @@ Estado: v0.0.1 EXPERIMENTAL. 91 expectativas (31 bloques de test) pasando, 20 fu
 - LASSO nativo: Coordinate Descent con warm starts y mantenimiento de residuo.
 - Base HAL segun van der Laan (2023): terminos de borde, nudos estrictamente interiores y escalado a [0,1] (sin colinealidad; rango completo verificado). No comparada con hal9001.
 - Nuisances nativos: KDE para omega, HAL bivariado con CV para Q, KDE por bins para g (g_n NO es el estimador HAL de densidad del paper).
-- Inferencia (experimental): curva de influencia del Lemma 3.1 (componentes Q_bar y Q_W, con Sigma^+) + IC de Wald puntuales. En el piloto con los DGP exactos del paper (n = 500, B = 50, nuisances estimadas) la cobertura de Wald fue de 0.72 a 0.92 segun el escenario (nominal 0.95): aun no es fiable. Causas candidatas, no probadas: seleccion LASSO data-adaptativa tratada como sieve fijo y residuos dentro de muestra (el paper hace cross-fitting K = 2 para la varianza). Ver SPEC/decisions.md (D-0004).
+- Inferencia (experimental): curva de influencia del Lemma 3.1 (componentes Q_bar y Q_W, con Sigma^+) + IC de Wald puntuales. En el piloto con los DGP exactos del paper (n = 500, B = 50, nuisances estimadas) la cobertura de Wald fue de 0.72 a 0.92 segun el escenario (nominal 0.95): aun no es fiable. Causa identificada en parte: con `k_Q = 0` y pocos nudos en el HAL de Q (`n_knots_Q = 10`, por defecto) la varianza real de `psi_hat` tiene picos en las dosis cercanas a los nudos que el IC no recoge; con `n_knots_Q = 20` o `k_Q = 1` desaparecen (ver "Hallazgo principal"). Siguen sin explicar las dosis extremas con tratamiento normal. Ver SPEC/decisions.md (D-0004, D-0012).
 
 ## Instalacion
 
@@ -73,7 +73,53 @@ Preguntas resueltas:
 - Q-05: Sin Sigma^-1 por defecto
 - Q-17: Nudos estrictamente interiores para evitar colinealidad
 
+## Hallazgo principal: resolucion del HAL de Q
+
+Con `k_Q = 0` (escalones) y `n_knots_Q = 10`, los nudos del HAL de Q (cuantiles de la muestra) son pocos y cambian de
+una muestra a otra. La funcion estimada cambia de nivel en esos nudos y la varianza de `psi_hat` crece cerca de ellos en
+proporcion a la pendiente al cuadrado de la verdad (Spearman 0.70-0.90 entre `var_MC` y `psi0'(a)^2` en seis corridas
+uniformes de los DGP 1 y 2; ~0 en el DGP 3, donde `k_Q = 1`). El IC trata la base como fija y no recoge ese termino
+(Spearman del SE^2 con la pendiente: 0.05-0.58). Dos arreglos lo eliminan:
+
+DGP 1, tratamiento uniforme, ventana `c1 = 9, c2 = 14`, cross-fitting K = 2 (RMSE medio por dosis):
+
+| configuracion | var_MC en a = 4 | ancho MC-SE | cob. Wald en muestra | SE/sd en muestra | RMSE HAL / T-HAL | coste por replica |
+|---|---|---|---|---|---|---|
+| `k_Q = 0`, 10 nudos (B = 60, s555001) | 1.84 | 2.85 | 0.797 | 0.87 | 1.13 / 0.747 | ~55 s |
+| `k_Q = 0`, 20 nudos (B = 30, s888001) | 0.18 | 1.59 | 0.956 | 1.10 | 0.767 / 0.426 | ~168 s |
+| `k_Q = 1`, 10 nudos (B = 60, s999001) | 0.03 | 1.85 | 0.968 | 1.52 | 1.10 / 0.490 | ~47 s |
+
+(`experiments/results/nkq20_*`, `kq1_*` y `sieve_*`.) Con `n_knots_Q = 20` en otros escenarios (B = 30, semilla 123001,
+`experiments/results/nkq20_cf_dgp123_*`):
+
+| escenario | dif. RMSE frente a HAL (EE) | T-HAL gana en | cob. Wald en muestra -> CF | SE/sd en muestra -> CF | cob. MC-SE |
+|---|---|---|---|---|---|
+| DGP 2, uniforme, ventana 9-14 | -0.269 (0.017) | 30 de 30 | 0.927 -> 0.976 | 1.01 -> 1.38 | 0.940 |
+| DGP 1, normal, tope 3 | -0.266 (0.035) | 27 de 30 | 0.799 -> 0.881 | 0.74 -> 1.00 | 0.932 |
+| DGP 3, normal, tope 3 | +0.255 (0.092) | 10 de 30 | 0.889 -> 0.908 | 1.13 -> 1.21 | 0.936 |
+
+Lectura (n = 500; B = 30-60; semillas distintas entre configuraciones, comparaciones no pareadas):
+
+- Con un Q mas fino (o `k_Q = 1`) desaparecen los picos de varianza, el ancho del IC ideal se reduce hasta un 44 % y la
+  cobertura de Wald con el SE en muestra sube a 0.93-0.97 en los escenarios uniformes. Tambien mejoran el HAL y T-HAL.
+- Con `k_Q = 1` el SE queda sobrestimado (SE/sd ~1.5): el HAL con `k = 1` es sesgado para una verdad con escalones en w y
+  los residuos incluyen ese sesgo. Con 20 nudos el SE en muestra queda calibrado (SE/sd 1.0-1.1).
+- El cross-fitting de la varianza ya no hace falta con tratamiento uniforme y Q fino (sobrecorrige: SE/sd 1.4), pero con
+  tratamiento normal en el DGP 1 corrige un SE corto (0.74 -> 1.00). No es una mejora universal.
+- Sigue sin reproducirse que T-HAL gane en el DGP 3 con tratamiento normal (+0.255, 10 de 30), y en ese escenario la
+  varianza real de `psi_hat` en a = 9 (24.4) es ocho veces el SE^2 medio (2.95): las dosis extremas con pesos grandes
+  estan sin resolver.
+- El valor por defecto sigue siendo `n_knots_Q = 10`: pasar a 20 cuesta ~3 veces mas de tiempo y falta confirmarlo con
+  otros n y mas replicas. Si el HAL del paper usa muchos mas nudos (p. ej. los puntos observados), esta es una
+  diferencia relevante de esta implementacion; no esta verificado contra el paper.
+
 ## Evidencia: Monte Carlo piloto con los DGP del paper
+
+> **Aviso (2026-10-17).** Las tablas de esta seccion usan `n_knots_Q = 10` (valor por defecto) salvo que se indique lo
+> contrario. Esa resolucion del HAL de Q es insuficiente en los DGP 1 y 2 (`k_Q = 0`): infla la varianza de `psi_hat`
+> en ciertas dosis y la cobertura de Wald medida (0.72-0.89) esta afectada (ver "Hallazgo principal"). Las conclusiones
+> sobre T-HAL frente al HAL en los DGP 1 y 2 se mantienen; las cifras de cobertura y ancho no deben tomarse como el
+> rendimiento del metodo con una resolucion adecuada.
 
 > **Aviso (2026-10-15).** Hasta el commit `f4d86a5`, `Q_fun` escalaba la dosis con el rango de los puntos donde se
 > evaluaba y no con el del entrenamiento. Solo afecta a `k_Q = 1` (DGP 3): el plug-in HAL de referencia (`psi_hal`) y
@@ -289,7 +335,7 @@ Con el tope 3 (otra semilla) la diferencia era +0.346 (EE 0.068). Lectura:
 cd ~/repos/t-hal-mle-native
 Rscript -e 'testthat::test_local(".")'
 
-91 expectativas (31 bloques `test_that`) en verde al 2026-10-15.
+95 expectativas (33 bloques `test_that`) en verde al 2026-10-17.
 
 ## Referencias
 

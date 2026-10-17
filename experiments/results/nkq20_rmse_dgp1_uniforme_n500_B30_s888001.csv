@@ -1,0 +1,2 @@
+"escenario","B_validas","B_fallidas","RMSE_HAL","RMSE_plugin_dirigido","RMSE_THAL","dif_RMSE_THAL_menos_HAL","EE_dif","THAL_mejor_en","sesgo_abs_HAL","sesgo_abs_THAL","frac_sesgo_despreciable","cobertura_MCSE","cobertura_Wald","ancho_MCSE","ancho_Wald","tam_mediano","seg_por_rep"
+"dgp1_uniform_n500_cf_cap3_s888001_c9-14_nkq20",30,0,0.766807913579139,0.681085401578615,0.425575626650219,-0.385204554306714,0.0161885183611836,30,0.296928870066985,0.127597253972059,0.28,0.948,0.978666666666667,1.58748238601131,2.15163334298809,32.5,168.212550727526
