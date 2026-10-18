@@ -5,7 +5,7 @@
 # Monte Carlo con cross-fitting K=2 para la varianza.
 #
 # Uso:
-#   Rscript experiments/mc_cf.R <dgp 1|2|3> <normal|uniform> <n> <B> <outdir> [cores=1] [seed0=111001] [w_cap] [nuis=est|orac_gw] [c1=6] [c2=9] [n_knots_Q=10] [k_Q=auto|0|1]
+#   Rscript experiments/mc_cf.R <dgp 1|2|3> <normal|uniform> <n> <B> <outdir> [cores=1] [seed0=111001] [w_cap] [nuis=est|orac_gw] [c1=6] [c2=9] [n_knots_Q=10] [k_Q=auto|0|1] [sdA=2]
 #   Guarda se (cross-fitting) y se_insample (residuos en muestra) del MISMO ajuste: comparacion pareada.
 
 suppressMessages(library(thalnative))
@@ -26,6 +26,8 @@ nkq <- if (length(args) >= 12) as.integer(args[12]) else 10L   # nudos por varia
 stopifnot(is.finite(nkq), nkq >= 2L)
 kq_arg <- if (length(args) >= 13) args[13] else "auto"   # orden de suavidad del HAL del resultado: auto (0, salvo DGP 3) | 0 | 1
 stopifnot(kq_arg %in% c("auto", "0", "1"))
+sdA <- if (length(args) >= 14) as.numeric(args[14]) else 2   # desviacion tipica de A | W en el diseno normal (por defecto 2, como el paper)
+stopifnot(is.finite(sdA), sdA > 0, nuis_arg == "est" || sdA == 2)   # los oraculos g0_dgp/omega_oracle asumen sd = 2
 gf <- if (nuis_arg == "orac_gw") function(a, w) g0_dgp(a, w, trt) else NULL
 of <- if (nuis_arg == "orac_gw") function(a) omega_oracle(a, trt) else NULL
 stopifnot(dgp == 1 || dgp == 2 || dgp == 3, trt %in% c("normal", "uniform"))
@@ -34,7 +36,8 @@ suffix <- paste0("_cf_cap", wcap_arg, if (seed0 != 111001L) paste0("_s", seed0) 
                  if (nuis_arg != "est") paste0("_", nuis_arg) else "",
                  if (c1v != 6 || c2v != 9) paste0("_c", c1v, "-", c2v) else "",
                  if (nkq != 10L) paste0("_nkq", nkq) else "",
-                 if (kq_arg != "auto") paste0("_kq", kq_arg) else "")
+                 if (kq_arg != "auto") paste0("_kq", kq_arg) else "",
+                 if (sdA != 2) paste0("_sd", sdA) else "")
 dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 
 g_w <- function(w, dgp) switch(dgp,
@@ -45,8 +48,8 @@ g_w <- function(w, dgp) switch(dgp,
 sim_paper <- function(n, dgp, trt) {
   W <- rnorm(n)
   mu <- 5 + 1.5 * W
-  lo <- pnorm((0 - mu) / 2); hi <- pnorm((10 - mu) / 2)
-  A <- if (trt == "uniform") runif(n, 0, 10) else mu + 2 * qnorm(runif(n, lo, hi))
+  lo <- pnorm((0 - mu) / sdA); hi <- pnorm((10 - mu) / sdA)
+  A <- if (trt == "uniform") runif(n, 0, 10) else mu + sdA * qnorm(runif(n, lo, hi))
   gw <- g_w(W, dgp)
   Y <- 3 * sin(1.5 * A) + 0.5 * A + gw + (A - 5) * gw + rnorm(n)
   list(A = A, W = W, Y = Y)
