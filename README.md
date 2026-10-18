@@ -142,7 +142,7 @@ centro y hunde la cobertura.
 probabilidad condicional es P(A > 9 | W) ~ 0.003 con sd = 2; el 37 % de la poblacion tiene alli un peso verdadero mayor
 que 3. Si se ensancha A | W (semilla 515001, tope 3, B = 60, mismos W y ruido):
 
-| sd de A \\| W | P(A > 9 \\| W < -0.5) | dif. RMSE por replica frente a HAL (EE) | T-HAL gana en | RMSE medio por dosis HAL / T-HAL | sd en a = 9 HAL / T-HAL | cob. Wald en muestra -> CF |
+| sd de A \| W | P(A > 9 \| W < -0.5) | dif. RMSE por replica frente a HAL (EE) | T-HAL gana en | RMSE medio por dosis HAL / T-HAL | sd en a = 9 HAL / T-HAL | cob. Wald en muestra -> CF |
 |---|---|---|---|---|---|---|
 | 2 | 0.0027 | +0.395 (0.086) | 12 de 60 | 1.06 / 1.23 | 2.20 / 5.00 | 0.861 -> 0.883 |
 | 3 | 0.0201 | +0.019 (0.046) | 33 de 60 | 1.00 / 0.92 | 1.52 / 2.58 | 0.916 -> 0.939 |
