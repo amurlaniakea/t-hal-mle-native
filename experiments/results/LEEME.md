@@ -66,3 +66,10 @@
   de `dgp3_tamano_targeting_*`.
 - `*_cf_*.csv` es la salida de `mc_cf_summary.R` y `*_rmse_*.csv` la de `mc_summary.R`.
 
+# Resumen con las metricas del paper
+
+- `resumen_tipo_paper_compacto.txt`: salida de `experiments/resumen_tipo_paper.R` (mediana y cuartiles del RMSE por dosis,
+  proporcion de dosis con sesgo despreciable, cobertura MC-SE y de Wald) sobre las carpetas `mc_out_cfp`, `mc_out_nkq2`,
+  `mc_out_d3size`, `mc_out_sdA`, `mc_out_sieve` y `mc_out_cfu`, condensada con un script auxiliar; la tabla completa de cada
+  carpeta es su `resumen_tipo_paper.csv`.
+

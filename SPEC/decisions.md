@@ -188,4 +188,16 @@ tamano del modelo de targeting ni los oraculos de g y omega lo arreglan; ensanch
 (+0.02, -0.11). Pendiente: comprobar con el paper la sd o varianza de A | W (D-0011), el truncamiento, la rejilla de
 evaluacion y la agregacion del RMSE; decidir si la evaluacion se restringe al soporte (declarado de antemano) y como
 se reporta la cobertura en las dosis sin solapamiento.
+Actualizacion 2026-10-18: el paper confirma sd = 2, el truncamiento y la rejilla. Con su metrica (mediana del RMSE por dosis
+sobre las 25 dosis) T-HAL queda por debajo del HAL en el DGP 3 normal; la perdida aparece con metricas que pesan los
+extremos (media por dosis, RMS por replica). Ver D-0014.
+
+---
+
+## D-0014 -- Metrica de comparacion con el paper
+Estado: tomada.
+Las comparaciones con el paper se hacen con sus metricas (seccion 7.3): RMSE y sesgo PUNTUALES por dosis, resumidos con la
+mediana y los cuartiles sobre las 25 dosis, proporcion de dosis con |sesgo / MC-SE| <= 1/log(n), cobertura con el MC-SE y
+cobertura de Wald (experiments/resumen_tipo_paper.R). La media de los RMSE por dosis y la diferencia de RMSE por replica
+(mc_summary.R) se mantienen como analisis de sensibilidad porque pesan las dosis extremas, donde T-HAL tiene mucha varianza.
 

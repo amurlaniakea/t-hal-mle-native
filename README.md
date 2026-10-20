@@ -106,12 +106,53 @@ Lectura (n = 500; B = 30-60; semillas distintas entre configuraciones, comparaci
   los residuos incluyen ese sesgo. Con 20 nudos el SE en muestra queda calibrado (SE/sd 1.0-1.1).
 - El cross-fitting de la varianza ya no hace falta con tratamiento uniforme y Q fino (sobrecorrige: SE/sd 1.4), pero con
   tratamiento normal en el DGP 1 corrige un SE corto (0.74 -> 1.00). No es una mejora universal.
-- Sigue sin reproducirse que T-HAL gane en el DGP 3 con tratamiento normal (+0.255, 10 de 30), y en ese escenario la
-  varianza real de `psi_hat` en a = 9 (24.4) es ocho veces el SE^2 medio (2.95): las dosis extremas con pesos grandes
-  estan sin resolver. Ver "DGP 3 con tratamiento normal: donde pierde T-HAL y por que" (falta de solapamiento).
+- Con la media por dosis y la diferencia por replica T-HAL no gana en el DGP 3 con tratamiento normal (+0.255, 10 de 30);
+  con la metrica del paper (mediana del RMSE por dosis) si queda por debajo del HAL. En a = 9 la varianza real de
+  `psi_hat` (24.4) es ocho veces el SE^2 medio (2.95): las dosis extremas con pesos grandes estan sin resolver. Ver
+  "Comparacion con las metricas del paper" y "DGP 3 con tratamiento normal: donde pierde T-HAL y por que".
 - El valor por defecto sigue siendo `n_knots_Q = 10`: pasar a 20 cuesta ~3 veces mas de tiempo y falta confirmarlo con
   otros n y mas replicas. Si el HAL del paper usa muchos mas nudos (p. ej. los puntos observados), esta es una
   diferencia relevante de esta implementacion; no esta verificado contra el paper.
+
+## Comparacion con las metricas del paper (seccion 7.3)
+
+El paper (arXiv:2607.03824, secciones 7.1-7.3) usa la misma sd = 2 para A | W (truncada a [0, 10]), la misma rejilla de 25
+dosis en [1, 9] y el mismo selector de tamano (6 y 9), y resume el RMSE y el sesgo PUNTUALES de cada dosis con diagramas de
+caja sobre las 25 dosis. `experiments/resumen_tipo_paper.R` calcula esos resumenes (mediana y cuartiles del RMSE por dosis,
+proporcion de dosis con |sesgo / MC-SE| <= 1/log(n), cobertura con el MC-SE y cobertura de Wald). n = 500; HAL-MLE,
+T-HAL-MLE (Plugin) y T-HAL-MLE son `psi_hal`, `psi_plugin` y `psi_hat`.
+
+RMSE puntual por dosis: mediana [Q1 - Q3] sobre las 25 dosis (salida completa en
+`experiments/results/resumen_tipo_paper_compacto.txt`):
+
+| escenario | HAL | T-HAL (Plugin) | T-HAL | RMSE max. HAL / T-HAL | cob. MC-SE min. (T-HAL) | cob. Wald mediana (min.) |
+|---|---|---|---|---|---|---|
+| DGP 1 uniforme, 10 nudos (B = 60) | 1.15 [0.71 - 1.61] | 0.84 [0.44 - 1.49] | 0.66 [0.46 - 0.82] | 2.29 / 1.01 | 0.73 | 0.88 (0.53) |
+| DGP 2 uniforme, 10 nudos (B = 60) | 1.00 [0.60 - 1.40] | 0.74 [0.53 - 1.38] | 0.63 [0.48 - 0.79] | 2.30 / 0.95 | 0.85 | 0.93 (0.70) |
+| DGP 3 uniforme, 10 nudos (B = 60) | 1.11 [0.86 - 1.24] | 0.60 [0.45 - 0.96] | 0.64 [0.46 - 0.94] | 1.66 / 1.45 | 0.63 | 0.98 (0.72) |
+| DGP 1 normal, 10 nudos (B = 60) | 0.89 [0.62 - 1.30] | 0.96 [0.51 - 1.20] | 0.51 [0.46 - 0.91] | 2.99 / 2.19 | 0.88 | 0.87 (0.67) |
+| DGP 2 normal, 10 nudos (B = 60) | 1.00 [0.65 - 1.20] | 1.01 [0.53 - 1.14] | 0.64 [0.41 - 1.08] | 2.69 / 2.08 | 0.83 | 0.85 (0.60) |
+| DGP 3 normal, 10 nudos (B = 60) | 0.87 [0.64 - 1.18] | 0.71 [0.43 - 1.34] | 0.77 [0.47 - 1.34] | 2.08 / 3.71 | 0.88 | 0.92 (0.68) |
+| DGP 2 uniforme, 20 nudos (B = 30) | 0.60 [0.44 - 0.94] | 0.54 [0.40 - 0.94] | 0.42 [0.35 - 0.50] | 1.35 / 0.97 | 0.87 | 1.00 (0.90) |
+| DGP 1 normal, 20 nudos (B = 30) | 0.72 [0.50 - 0.97] | 0.68 [0.46 - 0.98] | 0.37 [0.32 - 0.93] | 2.32 / 1.41 | 0.87 | 0.90 (0.77) |
+| DGP 3 normal, 20 nudos (B = 30) | 0.81 [0.59 - 1.18] | 0.60 [0.34 - 1.25] | 0.60 [0.45 - 1.23] | 2.76 / 4.90 | 0.77 | 0.93 (0.43) |
+
+Lectura (n = 500, B = 30-60, semillas distintas entre filas):
+
+- Con las metricas del paper se reproduce su ordenacion: con tratamiento uniforme T-HAL < T-HAL (Plugin) < HAL en los DGP 1 y 2;
+  en el DGP 3 el HAL tiene la mediana mas alta y T-HAL y su plug-in son comparables (el paper dice lo mismo). Con
+  tratamiento normal T-HAL tiene la mediana mas baja en los tres DGP, incluido el DGP 3 (0.77 frente a 0.87 con 10 nudos;
+  0.60 frente a 0.81 con 20).
+- Las perdidas de T-HAL en el DGP 3 normal que se describen mas abajo aparecen al usar la media por dosis o la diferencia por
+  replica, que pesan las dosis extremas: el RMSE maximo por dosis de T-HAL (3.7 - 4.9, en a = 9) supera al del HAL (2.1 - 2.8).
+- Con 10 nudos en el HAL de Q, el HAL y T-HAL tienen RMSE ~1.5 veces mayores que en la Figura 1 del paper (lectura a ojo del
+  grafico, no una tabla: ~0.75 / 0.55 / 0.4 para HAL / Plugin / T-HAL en el DGP 1 uniforme); con 20 nudos la escala es parecida
+  (media por dosis 0.77 y 0.43 en ese escenario).
+- La cobertura Wald mediana de T-HAL con tratamiento uniforme es 0.88-0.98 y con tratamiento normal 0.85-0.93; el paper
+  da ~0.95 y "considerable infracobertura", respectivamente. La cobertura MC-SE minima por dosis de T-HAL (0.63 - 0.88) esta
+  dentro del ruido con B = 30-60 salvo las dosis ya descritas; la del HAL llega a 0.07 - 0.13 en el DGP 3, algo que el paper no
+  muestra: nuestro HAL con pocos nudos es sesgado en alguna dosis.
+- Limites: n = 500 y B = 30-60 (el paper usa B = 1000 y n hasta 2000); no se han comparado cifra a cifra con tablas del paper.
 
 ## DGP 3 con tratamiento normal: donde pierde T-HAL y por que
 
@@ -155,10 +196,12 @@ DGP. Lectura (un DGP, n = 500, B = 60):
 - La perdida del DGP 3 normal con sd = 2 se explica en gran parte por la falta de solapamiento en las dosis altas, no por
   los topes ni por el tamano del targeting ni por estimar g y omega.
 - Incluso con sd = 4, T-HAL sigue algo peor que el HAL en a = 9 (RMSE 2.09 frente a 1.68, z = +2.2).
-- El paper dice que sus DGP no sufren pesos grandes; con sd = 2 los pesos verdaderos llegan a 29 en a = 9 (w = -1.5). Falta
-  comprobar contra el paper la sd (o varianza) de A | W, el truncamiento, la rejilla de evaluacion y como agrega el RMSE.
+- El paper confirma sd = 2 para A | W, el truncamiento a [0, 10] y la rejilla de 25 dosis; con sd = 2 los pesos verdaderos
+  llegan a 29 en a = 9 (w = -1.5), aunque el paper dice que sus DGP no sufren pesos grandes (usa haldensify para g, que no se
+  ha comparado aqui; con g oraculo no cambia nada).
 - La comparacion global depende de la metrica: con tope <= 2 (semilla 444001) el RMSE medio por dosis da a T-HAL por
-  debajo del HAL, mientras que la diferencia por replica (RMS entre dosis) lo da por encima.
+  debajo del HAL, mientras que la diferencia por replica (RMS entre dosis) lo da por encima. La metrica del paper (mediana
+  del RMSE por dosis) lo da por debajo (ver "Comparacion con las metricas del paper").
 
 ## Evidencia: Monte Carlo piloto con los DGP del paper
 
@@ -375,7 +418,8 @@ Con el tope 3 (otra semilla) la diferencia era +0.346 (EE 0.068). Lectura:
 - T-HAL conserva menos sesgo que el HAL (0.15-0.16 frente a 0.64) y pierde por varianza.
 - RMSE y cobertura van en direcciones opuestas: con el tope mas bajo el SE baja mas deprisa que la dispersion real
   y la cobertura de Wald cae de 0.903 a 0.867. Ningun tope es el mejor para las dos cosas.
-- No se reproduce que T-HAL gane con tratamiento normal en el DGP 3 con `k_Q = 1` y n = 500.
+- Con la media por dosis y la diferencia por replica T-HAL no supera al HAL en el DGP 3 normal con `k_Q = 1` y n = 500; con
+  la mediana del RMSE por dosis (metrica del paper) si.
 
 ## Tests
 
